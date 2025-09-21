@@ -1,76 +1,56 @@
-import argparse
-import subprocess
+from . import command as cmd
+from . import config as cfg
+from . import git as git
+
+# ANSI codes
+BOLD = '\033[1m'
+RESET = '\033[0m'
+GREEN = '\033[32m'
+RED = '\033[31m'
 
 
-def run_command(command, print_stdout=True):
-    c_expanded = command
-
-    result = subprocess.run(
-        c_expanded,
-        capture_output=True,
-        text=True,
-    )
-
-    success = True if result.returncode == 0 else False
-
-    if print_stdout:
-        if len(result.stdout) > 0:
-            print(result.stdout)
-
-    if result.returncode != 0:
-        print('Exit code:', result.returncode)
-        print('Error:', result.stderr)
-
-    return result, success
+def print_welcome(package_name, bump, current_version, new_version):
+    welcome_message = [
+        # '\n',
+        f'\nBumping "{package_name}" to the next {bump} version:',
+        f'{BOLD}{RED}{current_version}{RESET} → {BOLD}{GREEN}{new_version}{RESET}\n',
+        'The following steps will be performed:',
+        '  1. Update the version in pyproject.toml and uv.lock',
+        '  2. Create a tagged commit with the updated files',
+        '  3. Push the changes to the remote repository\n',
+    ]
+    print('\n'.join(welcome_message))
 
 
-def get_repo_root():
-    result, success = run_command(['git', 'rev-parse', '--show-toplevel'], print_stdout=False)
-    if not success:
-        print('❌ Not inside a Git repository.')
+def get_version_str(return_project_name: bool = False):
+    result, _ = cmd.run_command(['uv', 'version', '--color', 'never'])
+    project_name, version = result.stdout.strip().split(' ')
+
+    if return_project_name:
+        return project_name, version
+
+    return version
+
+
+def main(bump: str, config_path: str = None):
+    print(f'\n{BOLD}Initializing uv-bump...{RESET}')
+    repo_root = git.get_repo_root()
+
+    config = cfg.load_config(config_path, cwd=repo_root)
+    if not config:
         exit(1)
-    # else:
-    #     print("✅ Inside a Git repository.")
-    return result.stdout.strip()
 
+    release_branch = config.get('release_branch', 'main')
+    tag_prefix = config.get('tag_prefix', 'v')
+    git.ensure_branch(release_branch)
 
-def run_git_command(args, cwd=None, print_stdout=True):
-    result = subprocess.run(
-        ['git'] + args,
-        cwd=cwd,
-        capture_output=True,
-        text=True,
-    )
-    if print_stdout and result.stdout:
-        print(result.stdout)
-    if result.returncode != 0:
-        print('Exit code:', result.returncode)
-        print('Error:', result.stderr)
-    return result, result.returncode == 0
+    result, _ = cmd.run_command(['uv', 'version', '--bump', 'patch', '--dry-run', '--color', 'never'])
+    package_name, current_version, _, new_version = result.stdout.strip().split(' ')
 
+    TAG = f'{tag_prefix}{new_version}'
+    MESSAGE = f'new version: {current_version} → {new_version}'
 
-def main():
-    parser = argparse.ArgumentParser(description='Bump version, create git tag, and push changes.')
-    parser.add_argument('bump', choices=['major', 'minor', 'patch'], help='Type of version bump.')
-    args = parser.parse_args()
-
-    bump = args.bump
-
-    repo_root = get_repo_root()
-
-    result, success = run_command(['uv', 'version', '--color', 'never'], print_stdout=False)
-    current_version = result.stdout.strip().split(' ')
-    project_name = current_version[0]
-    current_version = current_version[1]
-
-    print('\n')
-    print(f'Bumping "{project_name}" to the next {bump} version:')
-    run_command(['uv', 'version', '--bump', bump, '--dry-run'], print_stdout=True)
-
-    print('This will perform the following actions:')
-    print('  1. Update the version in pyproject.toml and uv.lock')
-    print('  2. Create a tagged commit with the updated files')
-    print('  3. Push the changes to the remote repository\n')
+    print_welcome(package_name, bump, current_version, new_version)
 
     # Interactive confirmation
     confirm = input('Do you want to proceed? [y/N]: ').strip().lower()
@@ -78,32 +58,21 @@ def main():
         print('❌ Aborted by user.')
         return
 
-    print(f'\nUpdating {project_name} version...\n')
-    run_command(['uv', 'version', '--bump', bump], print_stdout=False)
+    print(f'\n• updating {package_name} version...')
+    cmd.run_command(['uv', 'version', '--bump', bump])
 
-    result, success = run_command(['uv', 'version', '--short', '--color', 'never'], print_stdout=False)
-    new_version = result.stdout.strip()
+    print('• committing file changes')
+    cmd.run_command(['git', 'add', 'pyproject.toml', 'uv.lock'], cwd=repo_root)
+    cmd.run_command(['git', 'commit', '-m', MESSAGE], cwd=repo_root)
 
-    TAG = f'v{new_version}'
-    MESSAGE = f'new version: {current_version} → {new_version}'
+    print(f'• creating git tag: {TAG}')
+    cmd.run_command(['git', 'tag', TAG, '-m', MESSAGE], cwd=repo_root)
 
-    print('committing updated pyproject.toml and uv.lock files')
-    run_git_command(['add', 'pyproject.toml', 'uv.lock'], cwd=repo_root)
-    run_git_command(['commit', '-m', MESSAGE], cwd=repo_root, print_stdout=False)
+    print('• pushing to remote repository')
+    cmd.run_command(['git', 'push'], cwd=repo_root)
+    cmd.run_command(['git', 'push', 'origin', TAG], cwd=repo_root)
 
-    print(f'creating git tag: {TAG}')
-    run_git_command(['tag', TAG, '-m', MESSAGE], cwd=repo_root)
-
-    print('pushing changes to remote repository')
-    run_git_command(['push'], cwd=repo_root)
-    run_git_command(['push', 'origin', TAG], cwd=repo_root)
-
-    print('✅ Done! New version registered and tagged.')
+    print('\n✓ Done! New version registered and tagged.')
 
 
 # if __name__ == '__main__':
-#     parser = argparse.ArgumentParser(description='Bump version, create git tag, and push changes.')
-#     parser.add_argument('bump', choices=['major', 'minor', 'patch'], help='Type of version bump.')
-
-#     args = parser.parse_args()
-#     main(args.bump)
