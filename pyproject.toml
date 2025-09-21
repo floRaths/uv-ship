@@ -1,10 +1,10 @@
 [project]
 name = "pybump"
-version = "1.8.15"
+version = "1.8.16"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = ["tomli>=2.2.1"]
 
 [dependency-groups]
 dev = [
@@ -15,8 +15,12 @@ dev = [
 ]
 
 [project.scripts]
-uv_bump = "pybump.main:main"
+uv_bump = "pybump.cli:pybump_cli"
 
 [build-system]
 requires = ["uv_build"]
 build-backend = "uv_build"
+
+[tool.uv-bump]
+branch = "master"
+tag_prefix = "v"
