@@ -10,8 +10,12 @@ def bump_proj_version(which):
     subprocess.run(['uv', 'version', '--bump', which])
 
 
-def run_command(command):
-    c_expanded = command.split(' ')
+def run_command(command, expand=True):
+
+    if expand:
+        c_expanded = command.split(' ')
+    else:
+        c_expanded = command
 
     result = subprocess.run(
         c_expanded,
