@@ -470,7 +470,7 @@ wheels = [
 
 [[package]]
 name = "pybump"
-version = "0.1.0"
+version = "0.2.2"
 source = { virtual = "." }
 dependencies = [
     { name = "gitpython" },
