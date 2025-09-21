@@ -1,0 +1,171 @@
+# region Site
+site_name: G4X-tutorials
+site_author: Singular Genomics
+site_url: https://docs.singulargenomics.com/G4X-helpers/
+site_description: Singular Genomics G4X data documentation site
+repo_name: G4X-helpers
+repo_url: https://github.com/Singular-Genomics/G4X-helpers
+
+# region Theme
+theme:
+  name: material
+  logo: assets/sg_logo_text.svg
+  favicon: assets/favicon.ico
+
+  font:
+    text: Roboto
+    code: Fira Code
+
+  icon:
+    repo: fontawesome/brands/github
+
+    admonition:
+      note: octicons/tag-16
+      abstract: octicons/checklist-16
+      info: octicons/info-16
+      # tip: octicons/squirrel-16
+      success: octicons/check-16
+      question: octicons/question-16
+      warning: octicons/alert-16
+      failure: octicons/x-circle-16
+      danger: octicons/zap-16
+      bug: octicons/bug-16
+      example: octicons/beaker-16
+      quote: octicons/quote-16
+
+  features:
+    - navigation.path
+    - navigation.footer
+    - navigation.top
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.sections
+    - navigation.indexes
+    - navigation.tracking
+    # - navigation.tabs
+
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
+
+    - toc.follow
+
+    - search.suggest
+    - search.share
+
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+
+
+extra_css:
+  - stylesheets/sg_colors.css
+  - stylesheets/extra.css
+  - stylesheets/navbar.css
+
+exclude_docs: |
+  _partials/section_break.md
+  _partials/**
+
+# region Nav
+nav:
+  - Introduction: index.md
+
+  - G4X-helpers:
+      - G4X-helpers: g4x_helpers/index.md
+      - installation:
+        - installation: g4x_helpers/installation/index.md
+        - source install: g4x_helpers/installation/source.md
+        - Docker setup: g4x_helpers/installation/docker.md
+
+      - CLI features:
+        - CLI features: g4x_helpers/features/index.md
+        - --resegment: g4x_helpers/features/resegment.md
+        - --update_bin: g4x_helpers/features/update_bin.md
+        - --new_bin: g4x_helpers/features/new_bin.md
+        - --tar_viewer: g4x_helpers/features/tar_viewer.md
+
+      - usage: g4x_helpers/usage.md
+
+  - G4X data:
+      - g4x_data/index.md
+      - G4X output: g4x_data/g4x_output.md
+      - data import: g4x_data/data_import.md
+
+  - contributing:
+      - contributing: contributing/index.md
+
+  - changelog:
+      - changelog/index.md
+
+
+
+# region Extensions
+markdown_extensions:
+  - meta
+  - attr_list
+  - md_in_html
+  - admonition
+
+  - pymdownx.blocks.caption
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+
+  - pymdownx.snippets:
+      check_paths: true
+      base_path: docs
+
+  - pymdownx.details
+
+  - pymdownx.tabbed:
+      alternate_style: true
+
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+      pygments_lang_class: true
+      pygments_style: monokai
+
+  - toc:
+      title: On this page
+      anchorlink: true
+      toc_depth: 3
+
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+
+# region Extras
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Singular-Genomics/G4X-helpers
+
+    - icon: /fontawesome/regular/envelope
+      name: support
+      link: mailto:care@singulargenomics.com
+
+    - icon: fontawesome/brands/x-twitter
+      link: https://x.com/SingularGenomic
+
+    - icon: fontawesome/solid/earth-americas
+      link: https://www.singulargenomics.com/
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
