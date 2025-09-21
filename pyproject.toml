@@ -1,6 +1,6 @@
 [project]
 name = "pybump"
-version = "1.0.1"
+version = "1.0.2"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,3 +13,10 @@ dev = [
     "pre-commit>=4.3.0",
     "ruff == 0.13.1",
 ]
+
+[project.scripts]
+mytool = "pybump.auxFns:main"
+
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"
