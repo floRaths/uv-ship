@@ -1,6 +1,6 @@
 [project]
 name = "pybump"
-version = "1.8.16"
+version = "1.8.17"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -22,5 +22,5 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [tool.uv-bump]
-branch = "master"
+release_branch = "master"
 tag_prefix = "v"
