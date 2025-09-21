@@ -507,7 +507,7 @@ wheels = [
 
 [[package]]
 name = "pybump"
-version = "1.8.20"
+version = "1.8.21"
 source = { editable = "." }
 dependencies = [
     { name = "tomli" },
