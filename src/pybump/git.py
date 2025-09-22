@@ -14,19 +14,20 @@ def get_repo_root():
 
 def ensure_branch(release_branch: str):
     if release_branch is False:
-        print('Skipping branch check as per configuration [release_branch = false].')
+        print(f'{sym.warning} skipping branch check as per configuration [release_branch = false].')
         return True
 
     result, success = cmd.run_command(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
     if not success:
-        print(f'{sym.negative} Failed to determine current branch.')
+        print(f'{sym.negative} failed to determine current branch.')
         return True
 
     branch = result.stdout.strip()
     if branch != release_branch:
-        print(f"{sym.negative} You are on branch '{branch}'. uv-bump config requires '{release_branch}'.")
+        print(f"{sym.negative} you are on branch '{branch}'. uv-bump config requires '{release_branch}'.")
         return False
 
+    print(f'{sym.positive} on release branch "{branch}".')
     return True
 
 

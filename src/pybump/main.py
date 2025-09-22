@@ -52,6 +52,7 @@ def check_tag(tag, repo_root):
         print(f'{sym.item} deleting existing local tag {tag}')
         cmd.run_command(['git', 'tag', '-d', tag], cwd=repo_root)
 
+    print(f'{sym.positive} no tag conflicts.')
     return True
 
 
@@ -60,11 +61,11 @@ def main(bump: str, config_path: str = None):
     print('\n', end='')
     print(f'{BOLD}uv-bump{RESET}', end=' - ')
     repo_root = git.get_repo_root()
-    
+
     # Load config
     config = cfg.load_config(config_path, cwd=repo_root)
     exit(1) if not config else None
-    
+
     # dry run to collect all info first
     result, _ = cmd.run_command(['uv', 'version', '--bump', bump, '--dry-run', '--color', 'never'])
     package_name, current_version, _, new_version = result.stdout.strip().split(' ')
@@ -83,12 +84,10 @@ def main(bump: str, config_path: str = None):
     MESSAGE = f'new version: {current_version} → {new_version}'
 
     # check branch
-    print(f'{sym.item} checking branch...')
     on_branch = git.ensure_branch(release_branch)
     exit(1) if not on_branch else None
 
     # check tag status
-    print(f'{sym.item} checking tags...')
     tag_clear = check_tag(TAG, repo_root)
     exit(1) if not tag_clear else None
 
