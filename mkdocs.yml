@@ -1,7 +1,7 @@
 # region Site
 site_name: uv-ship
 site_url: https://floraths.github.io/uv-ship/
-site_description: A light tag and release tool for uv managed python projects
+site_description: a light tag and release tool for uv managed python projects
 
 repo_name: uv-ship
 repo_url: https://github.com/floRaths/uv-ship
@@ -10,7 +10,7 @@ site_author: Flo Raths
 # region Theme
 theme:
   name: material
-  # logo: assets/sg_logo_text.svg
+  logo: assets/package-variant-closed-check.svg
   # favicon: assets/favicon.ico
 
   font:
@@ -101,29 +101,25 @@ markdown_extensions:
   - toc:
       title: On this page
       anchorlink: true
-      toc_depth: 3
+      # toc_depth: 3
 
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-
 
 validation:
   omitted_files: warn
   absolute_links: warn
   unrecognized_links: warn
 
-
 # Path settings
 # NOTE these paths are set for the child-repos. they need to be adjusted in the core-repo mkdocs.yml
 exclude_docs: |
   _partials/**
 
-
 extra_css:
   - stylesheets/extra.css
   - stylesheets/navbar.css
-
 
 # region Nav
 nav:

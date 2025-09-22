@@ -23,7 +23,7 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [tool.uv]
-required-version = ">=0.8.8"     # also update in Dockerfile
+required-version = ">=0.8.8"
 default-groups = ["dev", "docs"]
 
 [tool.uv-ship]

@@ -121,7 +121,7 @@ def main(bump: str, config_path: str = None, allow_dirty: bool = False):
     cmd.run_command(['git', 'push'], cwd=repo_root)
     cmd.run_command(['git', 'push', 'origin', TAG], cwd=repo_root)
 
-    print(f'\n{sym.positive} Done! New version registered and tagged.')
+    print(f'\n{ac.GREEN}{sym.positive} done! new version registered and tagged.{ac.RESET}\n')
 
 
 # if __name__ == '__main__':

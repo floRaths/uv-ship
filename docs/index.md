@@ -1,9 +1,8 @@
-#
 # uv-ship
-<span style="margin-top:-3rem; display:block;">A light tag and release tool for uv managed python projects</span>
+<span style="margin-top:-3rem; display:block;">a light tag and release tool for uv managed python projects</span>
 <br>
 
-## what is does:
+## what it does:
 uv-ship is a simple tool designed to streamline and error-proof version release tasks in uv managed projects.
 It wraps `uv version --bump` commands with extended functionality to complete the release workflow.
 It is lightweight with **0 dependencies**!
