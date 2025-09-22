@@ -12,13 +12,13 @@ GREEN = '\033[32m'
 RED = '\033[31m'
 
 
-def print_welcome(package_name, bump, current_version, new_version):
+def print_operations():
     welcome_message = [
         '',
         'The following operations will be performed:',
-        '  1. update the version in pyproject.toml and uv.lock',
+        '  1. update version in pyproject.toml and uv.lock',
         '  2. create a tagged commit with the updated files',
-        '  3. push the changes to the remote repository\n',
+        '  3. push changes to the remote repository\n',
     ]
     print('\n'.join(welcome_message))
 
@@ -56,8 +56,9 @@ def check_tag(tag, repo_root):
     return True
 
 
-def main(bump: str, config_path: str = None):
-    # Ensure we're in a git repo and point to its root
+def main(bump: str, config_path: str = None, allow_dirty: bool = False):
+    
+    # ensure we're in a git repo and point to its root
     print('\n', end='')
     print(f'{BOLD}uv-bump{RESET}', end=' - ')
     repo_root = git.get_repo_root()
@@ -70,14 +71,15 @@ def main(bump: str, config_path: str = None):
     result, _ = cmd.run_command(['uv', 'version', '--bump', bump, '--dry-run', '--color', 'never'])
     package_name, current_version, _, new_version = result.stdout.strip().split(' ')
 
-    # Initial output message
+    # initial output message
     print(f'bumping to the next {ITALIC}{bump}{RESET} version:')
     print('\n', end='')
     print(f'{package_name} {BOLD}{RED}{current_version}{RESET} → {BOLD}{GREEN}{new_version}{RESET}\n')
 
     release_branch = config.get('release_branch', 'main')
     tag_prefix = config.get('tag_prefix', 'v')
-    allow_dirty = config.get('allow_dirty', False)
+    allow_dirty = config['allow_dirty'] if 'allow_dirty' in config else allow_dirty
+    reminders = config.get('reminders', None)
 
     # Construct tag and message
     TAG = f'{tag_prefix}{new_version}'
@@ -95,16 +97,24 @@ def main(bump: str, config_path: str = None):
     exit(1) if not tree_clean else None
 
     print(f'{sym.positive} ready!')
-    print_welcome(package_name, bump, current_version, new_version)
+
+    # show reminders if any
+    if reminders:
+        print('\n', end='')
+        print('You have set reminders in your config:')
+        for r in reminders or []:
+            print(f'{sym.item} {r}')
 
     # Interactive confirmation
+    print_operations()
+
     confirm = input('Do you want to proceed? [y/N]: ').strip().lower()
     if confirm not in ('y', 'yes'):
         print(f'{sym.negative} Aborted by user.')
         return
 
-    print('\n')
-    print(f'{sym.item} updating {package_name} version...')
+    # TODO safeguard these steps and rollback on failure
+    print(f'{sym.item} updating {package_name} version')
     cmd.run_command(['uv', 'version', '--bump', bump])
 
     print(f'{sym.item} committing file changes')
@@ -114,7 +124,7 @@ def main(bump: str, config_path: str = None):
     print(f'{sym.item} creating git tag: {TAG}')
     cmd.run_command(['git', 'tag', TAG, '-m', MESSAGE], cwd=repo_root)
 
-    print(f'{sym.item} pushing to remote repository...')
+    print(f'{sym.item} pushing to remote repository')
     cmd.run_command(['git', 'push'], cwd=repo_root)
     cmd.run_command(['git', 'push', 'origin', TAG], cwd=repo_root)
 

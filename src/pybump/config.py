@@ -70,6 +70,7 @@ def load_config(path: str | None = None, cwd: str = os.getcwd()):
         print(
             f'{sym.negative} No [tool.uv-bump] table found in "uv-bump.toml" or "pyproject.toml".\n👉 Please provide a config path.'
         )
+        return None
 
     print(f'config source: "{source}"')
     return settings

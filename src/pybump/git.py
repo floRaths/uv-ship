@@ -55,9 +55,9 @@ def ensure_clean_tree(repo_root, allow_dirty: bool = False):
             confirm = input(f'{sym.warning} You have unstaged changes. Proceed anyway? [y/N]: ').strip().lower()
             if confirm not in ('y', 'yes'):
                 print(f'{sym.negative} Aborted by user.')
-                proceed = False
+                return False
             else:
-                proceed = True
+                return True
         else:
             proceed = True
 
