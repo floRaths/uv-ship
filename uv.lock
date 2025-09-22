@@ -445,7 +445,7 @@ wheels = [
 
 [[package]]
 name = "pybump"
-version = "1.8.30"
+version = "1.8.31"
 source = { editable = "." }
 
 [package.dev-dependencies]
