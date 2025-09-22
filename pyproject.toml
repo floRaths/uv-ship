@@ -24,3 +24,4 @@ build-backend = "uv_build"
 [tool.uv-bump]
 release_branch = "master"
 tag_prefix = "v"
+allow_dirty = true

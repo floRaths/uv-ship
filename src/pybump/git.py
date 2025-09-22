@@ -26,30 +26,42 @@ def ensure_branch(release_branch: str):
     if branch != release_branch:
         print(f"{sym.negative} You are on branch '{branch}'. uv-bump config requires '{release_branch}'.")
         return False
-    
+
     return True
 
 
-def ensure_clean_tree(repo_root):
+def ensure_clean_tree(repo_root, allow_dirty: bool = False):
     """Check for staged/unstaged changes before continuing."""
     result, _ = cmd.run_command(['git', 'status', '--porcelain'], cwd=repo_root)
     lines = result.stdout.splitlines()
 
     if not lines:
-        print('✓ Working tree clean.')
+        print('✓ working tree clean.')
         return True  # clean working tree
 
     staged = [line for line in lines if line[0] not in (' ', '?')]  # first column = staged
     unstaged = [line for line in lines if line[1] not in (' ', '?')]  # second column = unstaged
 
     if staged:
-        print(f'{sym.negative} You have staged changes. Please commit or unstage them before proceeding.')
-        return False
+        if not allow_dirty:
+            print(f'{sym.negative} You have staged changes. Please commit or unstage them before proceeding.')
+            proceed = False
+        else:
+            proceed = True
 
     if unstaged:
-        confirm = input(f'{sym.warning} You have unstaged changes. Proceed anyway? [y/N]: ').strip().lower()
-        if confirm not in ('y', 'yes'):
-            print(f'{sym.negative} Aborted by user.')
-            return False
+        if not allow_dirty:
+            confirm = input(f'{sym.warning} You have unstaged changes. Proceed anyway? [y/N]: ').strip().lower()
+            if confirm not in ('y', 'yes'):
+                print(f'{sym.negative} Aborted by user.')
+                proceed = False
+            else:
+                proceed = True
+        else:
+            proceed = True
 
-    return True
+    if proceed:
+        print(f'{sym.warning} proceeding with uncommitted changes. [allow_dirty = true]')
+        return True
+
+    return False

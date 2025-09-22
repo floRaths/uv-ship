@@ -1,6 +1,4 @@
 import os
-
-# import tomli as tomllib
 import tomllib
 from pathlib import Path
 
@@ -39,8 +37,8 @@ def load_config(path: str | None = None, cwd: str = os.getcwd()):
         if not settings:
             print(f'{sym.negative} No [tool.uv-bump] table found in "{config_file}".')
             return None
-        print(f'{sym.item} loaded config from "{config_file}".')
-        return settings
+
+        source = config_file
 
     # 2. No custom path → check default files in cwd
     uv_bump_file = cwd / 'uv-bump.toml'
@@ -61,15 +59,17 @@ def load_config(path: str | None = None, cwd: str = os.getcwd()):
         return None
 
     if uv_bump_settings:
-        print(f'{sym.item} loaded config from "{uv_bump_file.name}".')
-        return uv_bump_settings
+        settings = uv_bump_settings
+        source = uv_bump_file.name
 
     if pyproject_settings:
-        print(f'{sym.item} loaded config from "{pyproject_file.name}".')
-        return pyproject_settings
+        settings = pyproject_settings
+        source = pyproject_file.name
 
-    # 3. Neither file has [tool.uv-bump]
-    print(
-        f'{sym.negative} No [tool.uv-bump] table found in "uv-bump.toml" or "pyproject.toml".\n👉 Please provide a config path.'
-    )
-    return None
+    if not (uv_bump_settings or pyproject_settings):
+        print(
+            f'{sym.negative} No [tool.uv-bump] table found in "uv-bump.toml" or "pyproject.toml".\n👉 Please provide a config path.'
+        )
+
+    print(f'config source: "{source}"')
+    return settings

@@ -56,27 +56,27 @@ def check_tag(tag, repo_root):
 
 
 def main(bump: str, config_path: str = None):
+    # Ensure we're in a git repo and point to its root
+    print('\n', end='')
+    print(f'{BOLD}uv-bump{RESET}', end=' - ')
+    repo_root = git.get_repo_root()
+    
+    # Load config
+    config = cfg.load_config(config_path, cwd=repo_root)
+    exit(1) if not config else None
+    
     # dry run to collect all info first
     result, _ = cmd.run_command(['uv', 'version', '--bump', bump, '--dry-run', '--color', 'never'])
     package_name, current_version, _, new_version = result.stdout.strip().split(' ')
 
-    # Ensure we're in a git repo and point to its root
-    repo_root = git.get_repo_root()
-
     # Initial output message
+    print(f'bumping to the next {ITALIC}{bump}{RESET} version:')
     print('\n', end='')
-    print(f'Bumping project to the next {ITALIC}{bump}{RESET} version:')
     print(f'{package_name} {BOLD}{RED}{current_version}{RESET} → {BOLD}{GREEN}{new_version}{RESET}\n')
-
-    tree_clean = git.ensure_clean_tree(repo_root)
-    exit(1) if not tree_clean else None
-
-    # Load config
-    config = cfg.load_config(config_path, cwd=repo_root)
-    exit(1) if not config else None
 
     release_branch = config.get('release_branch', 'main')
     tag_prefix = config.get('tag_prefix', 'v')
+    allow_dirty = config.get('allow_dirty', False)
 
     # Construct tag and message
     TAG = f'{tag_prefix}{new_version}'
@@ -92,6 +92,10 @@ def main(bump: str, config_path: str = None):
     tag_clear = check_tag(TAG, repo_root)
     exit(1) if not tag_clear else None
 
+    tree_clean = git.ensure_clean_tree(repo_root, allow_dirty)
+    exit(1) if not tree_clean else None
+
+    print(f'{sym.positive} ready!')
     print_welcome(package_name, bump, current_version, new_version)
 
     # Interactive confirmation
