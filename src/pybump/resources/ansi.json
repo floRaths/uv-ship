@@ -1,0 +1,8 @@
+{
+  "BOLD": "\u001b[1m",
+  "ITALIC": "\u001b[3m",
+  "UNDERLINE": "\u001b[4m",
+  "RESET": "\u001b[0m",
+  "GREEN": "\u001b[32m",
+  "RED": "\u001b[31m"
+}

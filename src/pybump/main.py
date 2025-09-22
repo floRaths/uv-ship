@@ -1,15 +1,7 @@
 from . import command as cmd
 from . import config as cfg
 from . import git as git
-from .resources import sym
-
-# ANSI codes
-BOLD = '\033[1m'
-ITALIC = '\033[3m'
-UNDERLINE = '\033[4m'
-RESET = '\033[0m'
-GREEN = '\033[32m'
-RED = '\033[31m'
+from .resources import ac, sym
 
 
 def print_operations():
@@ -38,12 +30,14 @@ def check_tag(tag, repo_root):
     remote_result, _ = cmd.run_command(['git', 'ls-remote', '--tags', 'origin', tag], cwd=repo_root)
 
     if remote_result.stdout.strip():
-        print(f'{sym.negative} Tag {BOLD}{tag}{RESET} already exists on the remote. Aborting.')
+        print(f'{sym.negative} Tag {ac.BOLD}{tag}{ac.RESET} already exists on the remote. Aborting.')
         return None
 
     if local_result.stdout.strip():
         confirm = (
-            input(f'{sym.warning} Tag {BOLD}{tag}{RESET} already exists locally. Overwrite? [y/N]: ').strip().lower()
+            input(f'{sym.warning} Tag {ac.BOLD}{tag}{ac.RESET} already exists locally. Overwrite? [y/N]: ')
+            .strip()
+            .lower()
         )
         if confirm not in ('y', 'yes'):
             print(f'{sym.negative} Aborted by user.')
@@ -57,10 +51,9 @@ def check_tag(tag, repo_root):
 
 
 def main(bump: str, config_path: str = None, allow_dirty: bool = False):
-    
     # ensure we're in a git repo and point to its root
     print('\n', end='')
-    print(f'{BOLD}uv-bump{RESET}', end=' - ')
+    print(f'{ac.BOLD}uv-bump{ac.RESET}', end=' - ')
     repo_root = git.get_repo_root()
 
     # Load config
@@ -72,9 +65,9 @@ def main(bump: str, config_path: str = None, allow_dirty: bool = False):
     package_name, current_version, _, new_version = result.stdout.strip().split(' ')
 
     # initial output message
-    print(f'bumping to the next {ITALIC}{bump}{RESET} version:')
+    print(f'bumping to the next {ac.ITALIC}{bump}{ac.RESET} version:')
     print('\n', end='')
-    print(f'{package_name} {BOLD}{RED}{current_version}{RESET} → {BOLD}{GREEN}{new_version}{RESET}\n')
+    print(f'{package_name} {ac.BOLD}{ac.RED}{current_version}{ac.RESET} → {ac.BOLD}{ac.GREEN}{new_version}{ac.RESET}\n')
 
     release_branch = config.get('release_branch', 'main')
     tag_prefix = config.get('tag_prefix', 'v')
