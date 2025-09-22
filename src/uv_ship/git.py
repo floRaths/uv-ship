@@ -66,3 +66,12 @@ def ensure_clean_tree(repo_root, allow_dirty: bool = False):
         return True
 
     return False
+
+
+def get_changelog():
+    tag_res, ok = cmd.run_command(['git', 'describe', '--tags', '--abbrev=0'])
+    base = tag_res[0].strip() if isinstance(tag_res, tuple) else tag_res.stdout.strip()
+
+    result, _ = cmd.run_command(['git', 'log', f'{base}..HEAD', '--pretty=format:- %s'], print_stdout=False)
+
+    return result.stdout
