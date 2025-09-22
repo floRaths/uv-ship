@@ -1,7 +1,8 @@
 import os
-from pathlib import Path
 
-import tomli as tomllib
+# import tomli as tomllib
+import tomllib
+from pathlib import Path
 
 
 def load_config(path: str | None = None, cwd: str = os.getcwd()):

@@ -44,11 +44,28 @@ def main(bump: str, config_path: str = None):
     tag_prefix = config.get('tag_prefix', 'v')
     git.ensure_branch(release_branch)
 
-    result, _ = cmd.run_command(['uv', 'version', '--bump', 'patch', '--dry-run', '--color', 'never'])
+    result, _ = cmd.run_command(['uv', 'version', '--bump', bump, '--dry-run', '--color', 'never'])
     package_name, current_version, _, new_version = result.stdout.strip().split(' ')
 
     TAG = f'{tag_prefix}{new_version}'
     MESSAGE = f'new version: {current_version} → {new_version}'
+
+    print('fetching latest changes from remote...')
+    # Check local and remote
+    local_result, _ = cmd.run_command(['git', 'tag', '--list', TAG], cwd=repo_root)
+    remote_result, _ = cmd.run_command(['git', 'ls-remote', '--tags', 'origin', TAG], cwd=repo_root)
+
+    if remote_result.stdout.strip():
+        print(f'❌ Tag {BOLD}{TAG}{RESET} already exists on the remote. Aborting.')
+        return
+
+    if local_result.stdout.strip():
+        confirm = input(f'⚠️ Tag {BOLD}{TAG}{RESET} already exists locally. Overwrite? [y/N]: ').strip().lower()
+        if confirm not in ('y', 'yes'):
+            print('❌ Aborted by user.')
+            return
+        print(f'• deleting existing local tag {TAG}')
+        cmd.run_command(['git', 'tag', '-d', TAG], cwd=repo_root)
 
     print_welcome(package_name, bump, current_version, new_version)
 
