@@ -1,7 +1,6 @@
 import importlib.resources as resources
 import json
 
-# register fonts supplied with package
 path = resources.files('uv_ship.resources')
 for cont in path.iterdir():
     if cont.name == 'symbols.json':

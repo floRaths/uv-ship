@@ -1,9 +1,17 @@
+import importlib.resources as resources
 import os
+import tomllib
 from pathlib import Path
 
-import tomllib
+from ..resources import sym
 
-from .resources import sym
+
+def _get_settings_from_toml(file: Path):
+    if not file.exists():
+        return None
+    with open(file, 'rb') as f:
+        data = tomllib.load(f)
+    return data.get('tool', {}).get('uv-ship')
 
 
 def load_config(path: str | None = None, cwd: str = os.getcwd()):
@@ -18,15 +26,13 @@ def load_config(path: str | None = None, cwd: str = os.getcwd()):
     - If no [tool.uv-ship] is found, prompt for a config path.
     """
 
-    def _get_settings_from_toml(file: Path):
-        if not file.exists():
-            return None
-        with open(file, 'rb') as f:
-            data = tomllib.load(f)
-        return data.get('tool', {}).get('uv-ship')
-
     if not isinstance(cwd, Path):
         cwd = Path(cwd)
+
+    def_path = resources.files('uv_ship.config')
+    for cont in def_path.iterdir():
+        if cont.name == 'default_config.toml':
+            default_settings = _get_settings_from_toml(cont)
 
     # 1. If user provides a custom path → always use that
     if path:
@@ -69,10 +75,14 @@ def load_config(path: str | None = None, cwd: str = os.getcwd()):
             source = pyproject_file.name
 
         if not (uv_bump_settings or pyproject_settings):
-            print(
-                f'{sym.negative} No [tool.uv-ship] table found in "uv-ship.toml" or "pyproject.toml".\n👉 Please provide a config path.'
-            )
-            return None
+            source = 'default'
+            settings = {}
+            # print(
+            #     f'{sym.item} no [tool.uv-ship] config provided in "uv-ship.toml" or "pyproject.toml".\nusing default settings.'
+            # )
+            # return None
 
     print(f'config source: "{source}"')
+    default_settings.update(settings)
+    settings = default_settings
     return settings

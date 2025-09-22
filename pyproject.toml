@@ -27,4 +27,4 @@ build-backend = "uv_build"
 release_branch = "master"
 tag_prefix = "v"
 reminders = ['updated CHANGELOG.md?', 'updated documentation?']
-allow_dirty = true
+allow_dirty = false

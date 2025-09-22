@@ -7,7 +7,7 @@ from .resources import ac, sym
 def print_operations():
     welcome_message = [
         '',
-        'The following operations will be performed:',
+        'the following operations will be performed:',
         '  1. update version in pyproject.toml and uv.lock',
         '  2. create a tagged commit with the updated files',
         '  3. push changes to the remote repository\n',
@@ -94,16 +94,16 @@ def main(bump: str, config_path: str = None, allow_dirty: bool = False):
     # show reminders if any
     if reminders:
         print('\n', end='')
-        print('You have set reminders in your config:')
+        print('you have set reminders in your config:')
         for r in reminders or []:
             print(f'{sym.item} {r}')
 
     # Interactive confirmation
     print_operations()
 
-    confirm = input('Do you want to proceed? [y/N]: ').strip().lower()
+    confirm = input('do you want to proceed? [y/N]: ').strip().lower()
     if confirm not in ('y', 'yes'):
-        print(f'{sym.negative} Aborted by user.')
+        print(f'{ac.RED}{sym.negative} aborted by user.{ac.RESET}')
         return
 
     # TODO safeguard these steps and rollback on failure

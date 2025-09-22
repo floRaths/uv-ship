@@ -1,11 +1,11 @@
 from . import command as cmd
-from .resources import sym
+from .resources import ac, sym
 
 
 def get_repo_root():
     result, success = cmd.run_command(['git', 'rev-parse', '--show-toplevel'])
     if not success:
-        print(f'{sym.negative} Not inside a Git repository.')
+        print(f'{sym.negative} not inside a Git repository.')
         exit(1)
     # else:
     #     print(f"{sym.positive} Inside a Git repository.")
@@ -54,7 +54,7 @@ def ensure_clean_tree(repo_root, allow_dirty: bool = False):
         if not allow_dirty:
             confirm = input(f'{sym.warning} You have unstaged changes. Proceed anyway? [y/N]: ').strip().lower()
             if confirm not in ('y', 'yes'):
-                print(f'{sym.negative} Aborted by user.')
+                print(f'{ac.RED}{sym.negative} aborted by user.{ac.RESET}')
                 return False
             else:
                 return True
