@@ -1,27 +1,55 @@
 from . import command as cmd
+from .resources import sym
 
 
 def get_repo_root():
     result, success = cmd.run_command(['git', 'rev-parse', '--show-toplevel'])
     if not success:
-        print('❌ Not inside a Git repository.')
+        print(f'{sym.negative} Not inside a Git repository.')
         exit(1)
     # else:
-    #     print("✅ Inside a Git repository.")
+    #     print(f"{sym.positive} Inside a Git repository.")
     return result.stdout.strip()
 
 
 def ensure_branch(release_branch: str):
     if release_branch is False:
         print('Skipping branch check as per configuration [release_branch = false].')
-        return
+        return True
 
     result, success = cmd.run_command(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
     if not success:
-        print('❌ Failed to determine current branch.')
-        exit(1)
+        print(f'{sym.negative} Failed to determine current branch.')
+        return True
 
     branch = result.stdout.strip()
     if branch != release_branch:
-        print(f"❌ You are on branch '{branch}'. uv-bump config requires '{release_branch}'.")
-        exit(1)
+        print(f"{sym.negative} You are on branch '{branch}'. uv-bump config requires '{release_branch}'.")
+        return False
+    
+    return True
+
+
+def ensure_clean_tree(repo_root):
+    """Check for staged/unstaged changes before continuing."""
+    result, _ = cmd.run_command(['git', 'status', '--porcelain'], cwd=repo_root)
+    lines = result.stdout.splitlines()
+
+    if not lines:
+        print('✓ Working tree clean.')
+        return True  # clean working tree
+
+    staged = [line for line in lines if line[0] not in (' ', '?')]  # first column = staged
+    unstaged = [line for line in lines if line[1] not in (' ', '?')]  # second column = unstaged
+
+    if staged:
+        print(f'{sym.negative} You have staged changes. Please commit or unstage them before proceeding.')
+        return False
+
+    if unstaged:
+        confirm = input(f'{sym.warning} You have unstaged changes. Proceed anyway? [y/N]: ').strip().lower()
+        if confirm not in ('y', 'yes'):
+            print(f'{sym.negative} Aborted by user.')
+            return False
+
+    return True
