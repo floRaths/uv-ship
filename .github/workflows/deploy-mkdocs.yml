@@ -36,6 +36,6 @@ jobs:
 
       - name: Deploy to GitHub Pages
         env:
-          TAG: ${{ github.ref_name }} 
+          TAG: ${{ github.ref_name }}
         run: |
           uv run --only-group docs mkdocs gh-deploy --force --clean --message "docs: $TAG"

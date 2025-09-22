@@ -4,11 +4,10 @@ import json
 # register fonts supplied with package
 path = resources.files('uv_ship.resources')
 for cont in path.iterdir():
-    
     if cont.name == 'symbols.json':
         with open(cont, 'r') as f:
             symbols = json.load(f)
-    
+
     if cont.name == 'ansi.json':
         with open(cont, 'r') as f:
             ansi_codes = json.load(f)

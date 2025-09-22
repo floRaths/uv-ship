@@ -2,15 +2,15 @@
 # See https://pre-commit.com/hooks.html for more hooks
 
 # Syntax docs: https://pre-commit.com/#regular-expressions
-exclude: (?x)(
-  | ^build
-  | ^dist
-  | ^.git
-  | ^.venv
-  | ^.vscode
-  | __pycache__
-  | -egg-info
-  )
+# exclude: (?x)(
+#   | ^build
+#   | ^dist
+#   | ^.git
+#   | ^.venv
+#   | ^.vscode
+#   | __pycache__
+#   | -egg-info
+#   )
 
 fail_fast: false
 
@@ -20,6 +20,7 @@ repos:
   hooks:
     - id: check-merge-conflict
     - id: check-yaml
+      exclude: mkdocs\.yml
     - id: check-json
     - id: check-toml
     - id: check-added-large-files

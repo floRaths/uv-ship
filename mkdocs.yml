@@ -118,7 +118,7 @@ validation:
 # NOTE these paths are set for the child-repos. they need to be adjusted in the core-repo mkdocs.yml
 exclude_docs: |
   _partials/**
-  
+
 
 extra_css:
   - stylesheets/extra.css
@@ -129,4 +129,3 @@ extra_css:
 nav:
   - introduction: index.md
   - changelog: changelog.md
-
