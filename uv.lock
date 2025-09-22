@@ -1006,17 +1006,19 @@ wheels = [
 
 [[package]]
 name = "uv-ship"
-version = "1.10.1"
+version = "1.10.2"
 source = { editable = "." }
 
 [package.dev-dependencies]
 dev = [
     { name = "ipykernel" },
     { name = "ipywidgets" },
-    { name = "mkdocs" },
-    { name = "mkdocs-material" },
     { name = "pre-commit" },
     { name = "ruff" },
+]
+docs = [
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
 ]
 
 [package.metadata]
@@ -1025,10 +1027,12 @@ dev = [
 dev = [
     { name = "ipykernel", specifier = ">=6.29.5" },
     { name = "ipywidgets", specifier = ">=8.1.6" },
-    { name = "mkdocs", specifier = "~=1.6" },
-    { name = "mkdocs-material", specifier = "~=9.6" },
     { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "ruff", specifier = "==0.13.1" },
+]
+docs = [
+    { name = "mkdocs", specifier = "~=1.6" },
+    { name = "mkdocs-material", specifier = "~=9.6" },
 ]
 
 [[package]]
