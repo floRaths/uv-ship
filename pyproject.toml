@@ -1,7 +1,7 @@
 [project]
-name = "pybump"
+name = "uv-ship"
 version = "1.8.34"
-description = "Add your description here"
+description = "A light tag and release tool for uv managed python projects"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
@@ -12,17 +12,19 @@ dev = [
     "ipywidgets>=8.1.6",
     "pre-commit>=4.3.0",
     "ruff == 0.13.1",
+    "mkdocs ~= 1.6",
+    "mkdocs-material ~= 9.6",
 ]
 
 [project.scripts]
-uv-bump = "pybump.cli:pybump_cli"
+uv-ship = "uv_ship.cli:uv_ship_cli"
 
 [build-system]
 requires = ["uv_build"]
 build-backend = "uv_build"
 
-[tool.uv-bump]
+[tool.uv-ship]
 release_branch = "master"
 tag_prefix = "v"
-# allow_dirty = true
 reminders = ['updated CHANGELOG.md?', 'updated documentation?']
+allow_dirty = true

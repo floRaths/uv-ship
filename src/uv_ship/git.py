@@ -24,7 +24,7 @@ def ensure_branch(release_branch: str):
 
     branch = result.stdout.strip()
     if branch != release_branch:
-        print(f"{sym.negative} you are on branch '{branch}'. uv-bump config requires '{release_branch}'.")
+        print(f"{sym.negative} you are on branch '{branch}'. uv-ship config requires '{release_branch}'.")
         return False
 
     print(f'{sym.positive} on release branch "{branch}".')

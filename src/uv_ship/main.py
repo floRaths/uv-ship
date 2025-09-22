@@ -53,7 +53,7 @@ def check_tag(tag, repo_root):
 def main(bump: str, config_path: str = None, allow_dirty: bool = False):
     # ensure we're in a git repo and point to its root
     print('\n', end='')
-    print(f'{ac.BOLD}uv-bump{ac.RESET}', end=' - ')
+    print(f'{ac.BOLD}uv-ship{ac.RESET}', end=' - ')
     repo_root = git.get_repo_root()
 
     # Load config

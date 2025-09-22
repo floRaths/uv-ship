@@ -1,0 +1,132 @@
+# region Site
+site_name: uv-ship
+site_url: https://floraths.github.io/uv-ship/
+site_description: A light tag and release tool for uv managed python projects
+
+repo_name: uv-ship
+repo_url: https://github.com/floRaths/uv-ship
+site_author: Flo Raths
+
+# region Theme
+theme:
+  name: material
+  # logo: assets/sg_logo_text.svg
+  # favicon: assets/favicon.ico
+
+  font:
+    text: Roboto
+    code: Fira Code
+
+  icon:
+    repo: fontawesome/brands/github
+
+    admonition:
+      note: octicons/tag-16
+      abstract: octicons/checklist-16
+      info: octicons/info-16
+      success: octicons/check-16
+      question: octicons/question-16
+      warning: octicons/alert-16
+      failure: octicons/x-circle-16
+      danger: octicons/zap-16
+      bug: octicons/bug-16
+      example: octicons/beaker-16
+      quote: octicons/quote-16
+      # tip: octicons/squirrel-16
+
+  features:
+    - navigation.path
+    - navigation.footer
+    - navigation.top
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.sections
+    - navigation.indexes
+    - navigation.tracking
+    # - navigation.tabs
+
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
+
+    - toc.follow
+
+    - search.suggest
+    - search.share
+
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+
+
+# region Extensions
+markdown_extensions:
+  - meta
+  - attr_list
+  - md_in_html
+  - admonition
+
+  - pymdownx.blocks.caption
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+
+  - pymdownx.snippets:
+      check_paths: true
+      base_path: docs
+
+  - pymdownx.details
+
+  - pymdownx.tabbed:
+      alternate_style: true
+
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+      pygments_lang_class: true
+      pygments_style: monokai
+
+  - toc:
+      title: On this page
+      anchorlink: true
+      toc_depth: 3
+
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+
+
+# Path settings
+# NOTE these paths are set for the child-repos. they need to be adjusted in the core-repo mkdocs.yml
+exclude_docs: |
+  _partials/**
+  
+
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/navbar.css
+
+
+# region Nav
+nav:
+  - introduction: index.md
+  - changelog: changelog.md
+
