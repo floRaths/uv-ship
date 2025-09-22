@@ -12,9 +12,8 @@ dev = [
     "ipywidgets>=8.1.6",
     "pre-commit>=4.3.0",
     "ruff == 0.13.1",
-    "mkdocs ~= 1.6",
-    "mkdocs-material ~= 9.6",
 ]
+docs = ["mkdocs ~= 1.6", "mkdocs-material ~= 9.6"]
 
 [project.scripts]
 uv-ship = "uv_ship.cli:uv_ship_cli"
@@ -25,6 +24,7 @@ build-backend = "uv_build"
 
 [tool.uv]
 required-version = ">=0.8.8"     # also update in Dockerfile
+default-groups = ["dev", "docs"]
 
 [tool.uv-ship]
 release_branch = "master"
