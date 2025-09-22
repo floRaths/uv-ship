@@ -23,6 +23,9 @@ uv-ship = "uv_ship.cli:uv_ship_cli"
 requires = ["uv_build"]
 build-backend = "uv_build"
 
+[tool.uv]
+required-version = ">=0.8.8"     # also update in Dockerfile
+
 [tool.uv-ship]
 release_branch = "master"
 tag_prefix = "v"
