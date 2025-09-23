@@ -3,8 +3,10 @@ name = "uv-ship"
 version = "0.1.0"
 description = "A light tag and release tool for uv managed python projects"
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = []
+requires-python = ">=3.10"
+dependencies = [
+    "tomli>=2.2.1",
+]
 
 [dependency-groups]
 dev = [

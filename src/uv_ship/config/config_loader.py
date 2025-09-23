@@ -1,7 +1,8 @@
 import importlib.resources as resources
 import os
-import tomllib
 from pathlib import Path
+
+import tomli as tomllib
 
 from ..resources import sym
 
