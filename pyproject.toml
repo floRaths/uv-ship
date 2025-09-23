@@ -1,6 +1,6 @@
 [project]
 name = "uv-ship"
-version = "1.10.3"
+version = "0.0.0"
 description = "A light tag and release tool for uv managed python projects"
 readme = "README.md"
 requires-python = ">=3.11"
