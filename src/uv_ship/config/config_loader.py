@@ -85,5 +85,5 @@ def load_config(path: str | None = None, cwd: str = os.getcwd()):
 
     print(f'config source: "{source}"')
     default_settings.update(settings)
-    settings = default_settings
-    return settings
+
+    return default_settings if default_settings else exit(1)
