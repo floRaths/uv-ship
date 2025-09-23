@@ -1,0 +1,41 @@
+# .github/workflows/deploy-mkdocs.yml
+name: Deploy mkdocs on new tag
+
+# Trigger on sem-version tag
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'test_docs_*'
+  workflow_dispatch:
+
+# gh-pages needs a push, so grant write; read is implied
+permissions:
+  contents: write
+
+concurrency: docs # auto-cancel superseded runs
+
+jobs:
+  Initialize-Docs-Deployment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo with submodule
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version-file: "pyproject.toml"
+          enable-cache: false
+
+      - name: Deploy to GitHub Pages
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          uv run --only-group docs mkdocs gh-deploy --force --clean --message "docs: $TAG"

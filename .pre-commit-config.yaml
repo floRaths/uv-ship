@@ -1,0 +1,43 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+# Syntax docs: https://pre-commit.com/#regular-expressions
+# exclude: (?x)(
+#   | ^build
+#   | ^dist
+#   | ^.git
+#   | ^.venv
+#   | ^.vscode
+#   | __pycache__
+#   | -egg-info
+#   )
+
+fail_fast: false
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+    - id: check-merge-conflict
+    - id: check-yaml
+      exclude: mkdocs\.yml
+    - id: check-json
+    - id: check-toml
+    - id: check-added-large-files
+      exclude: ^.*\.lock$
+    - id: detect-private-key
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.13.1 # Ruff version.
+  hooks:
+
+    # Run the linter.
+    - id: ruff-check
+      name: Lint python files (Ruff)
+      args: [ --fix ]
+
+    # Run the formatter.
+    - id: ruff-format
+      name: Format python files (Ruff)

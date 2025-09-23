@@ -1,0 +1,45 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - v*  # e.g. v0.1.0
+      - 'test_publish_*'
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: 'pyproject.toml'
+        # with:
+        #   python-version-file: ".python-version"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version-file: "pyproject.toml"
+
+      - name: Build
+        run: uv build
+
+      # # Optional but recommended quick checks of the built artifacts:
+      # - name: Smoke test (wheel)
+      #   run: uv run --isolated --no-project --with dist/*.whl tests/smoke_test.py
+
+      # - name: Smoke test (sdist)
+      #   run: uv run --isolated --no-project --with dist/*.tar.gz tests/smoke_test.py
+
+      - name: Publish
+        run: uv publish
