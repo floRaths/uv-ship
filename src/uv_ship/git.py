@@ -1,5 +1,6 @@
 from . import command as cmd
-from .resources import ac, sym
+from .resources import messages as msg
+from .resources import sym
 
 
 def get_repo_root():
@@ -45,16 +46,16 @@ def ensure_clean_tree(repo_root, allow_dirty: bool = False):
 
     if staged:
         if not allow_dirty:
-            print(f'{sym.negative} You have staged changes. Please commit or unstage them before proceeding.')
+            print(f'{sym.negative} you have staged changes. Please commit or unstage them before proceeding.')
             proceed = False
         else:
             proceed = True
 
     if unstaged:
         if not allow_dirty:
-            confirm = input(f'{sym.warning} You have unstaged changes. Proceed anyway? [y/N]: ').strip().lower()
+            confirm = input(f'{sym.warning} you have unstaged changes. Proceed anyway? [y/N]: ').strip().lower()
             if confirm not in ('y', 'yes'):
-                print(f'{ac.RED}{sym.negative} aborted by user.{ac.RESET}')
+                msg.abort_by_user()
                 return False
             else:
                 return True

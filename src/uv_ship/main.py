@@ -2,17 +2,18 @@ from . import command as cmd
 from . import config as cfg
 from . import git as git
 from .resources import ac, sym
+from .resources import messages as msg
 
 
 def print_operations():
-    welcome_message = [
+    operations_message = [
         '',
         'the following operations will be performed:',
         '  1. update version in pyproject.toml and uv.lock',
         '  2. create a tagged commit with the updated files',
         '  3. push changes to the remote repository\n',
     ]
-    print('\n'.join(welcome_message))
+    print('\n'.join(operations_message))
 
 
 def get_version_str(return_project_name: bool = False):
@@ -40,12 +41,13 @@ def check_tag(tag, repo_root):
             .lower()
         )
         if confirm not in ('y', 'yes'):
-            print(f'{sym.negative} Aborted by user.')
+            msg.abort_by_user()
             return None
 
         print(f'{sym.item} deleting existing local tag {tag}')
         cmd.run_command(['git', 'tag', '-d', tag], cwd=repo_root)
 
+    # TODO if the user overrides a tag, the 'no tag conflicts' message still appears
     print(f'{sym.positive} no tag conflicts.')
     return True
 
@@ -103,7 +105,7 @@ def main(bump: str, config_path: str = None, allow_dirty: bool = False):
 
     confirm = input('do you want to proceed? [y/N]: ').strip().lower()
     if confirm not in ('y', 'yes'):
-        print(f'{ac.RED}{sym.negative} aborted by user.{ac.RESET}')
+        msg.abort_by_user()
         return
 
     # TODO safeguard these steps and rollback on failure
