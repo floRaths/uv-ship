@@ -1,5 +1,5 @@
 [tool.uv-ship]
-release_branch = "master"
+release_branch = "main"
 tag_prefix = "v"
 reminders = ['CHANGELOG.md updated?', 'documentation updated?']
 allow_dirty = false
