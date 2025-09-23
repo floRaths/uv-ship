@@ -1,7 +1,6 @@
 from . import commands as cmd
 from . import config as cfg
 from .resources import messages as msg
-from .resources import sym
 
 
 def main(bump: str, config_path: str = None, allow_dirty: bool = False):
@@ -37,7 +36,7 @@ def main(bump: str, config_path: str = None, allow_dirty: bool = False):
     # check working tree status
     cmd.ensure_clean_tree(repo_root, allow_dirty)
 
-    print(f'{sym.positive} ready!')
+    msg.preflight_passed()
 
     # show reminders if any
     msg.show_reminders(reminders)
@@ -51,7 +50,9 @@ def main(bump: str, config_path: str = None, allow_dirty: bool = False):
         msg.abort_by_user()
         return
 
-    # TODO test safeguards
+    # cmd.pre_commit_checks()
+
+    # # TODO test safeguards
     cmd.update_files(package_name, bump)
 
     cmd.commit_files(repo_root, MESSAGE)

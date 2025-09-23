@@ -6,8 +6,17 @@ def print_header():
     print(f'{ac.BOLD}uv-ship{ac.RESET}', end=' - ')
 
 
+def failed_to(reason):
+    print(f'{ac.RED}{sym.negative} failed to {reason}.{ac.RESET}\n')
+    exit(1)
+
+
 def abort_by_user():
     print(f'{ac.RED}{sym.negative} aborted by user.{ac.RESET}\n')
+
+
+def preflight_passed():
+    print(f'{sym.positive} ready!')
 
 
 def print_command_summary(bump, package_name, current_version, new_version):
