@@ -1,7 +1,7 @@
 from . import commands as cmd
 from . import config as cfg
-from .resources import ac, sym
 from .resources import messages as msg
+from .resources import sym
 
 
 def main(bump: str, config_path: str = None, allow_dirty: bool = False):
@@ -51,22 +51,16 @@ def main(bump: str, config_path: str = None, allow_dirty: bool = False):
         msg.abort_by_user()
         return
 
-    # TODO safeguard these steps and rollback on failure
-    print(f'{sym.item} updating {package_name} version')
-    cmd.run_command(['uv', 'version', '--bump', bump])
+    # TODO test safeguards
+    cmd.update_files(package_name, bump)
 
-    print(f'{sym.item} committing file changes')
-    cmd.run_command(['git', 'add', 'pyproject.toml', 'uv.lock'], cwd=repo_root)
-    cmd.run_command(['git', 'commit', '-m', MESSAGE], cwd=repo_root)
+    cmd.commit_files(repo_root, MESSAGE)
 
-    print(f'{sym.item} creating git tag: {TAG}')
-    cmd.run_command(['git', 'tag', TAG, '-m', MESSAGE], cwd=repo_root)
+    cmd.create_git_tag(TAG, MESSAGE, repo_root)
 
-    print(f'{sym.item} pushing to remote repository')
-    cmd.run_command(['git', 'push'], cwd=repo_root)
-    cmd.run_command(['git', 'push', 'origin', TAG], cwd=repo_root)
+    cmd.push_changes(TAG, repo_root)
 
-    print(f'\n{ac.GREEN}{sym.positive} done! new version registered and tagged.{ac.RESET}\n')
+    msg.done()
 
 
 # if __name__ == '__main__':

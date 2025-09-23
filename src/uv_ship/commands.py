@@ -147,3 +147,35 @@ def check_tag(tag, repo_root):
         tag_clear = True
 
     exit(1) if not tag_clear else None
+
+
+def update_files(package_name, bump):
+    print(f'{sym.item} updating {package_name} version')
+    result, success = run_command(['uv', 'version', '--bump', bump])
+    exit(1) if not success else None
+
+
+def commit_files(repo_root, MESSAGE):
+    print(f'{sym.item} committing file changes')
+
+    result, success = run_command(['git', 'add', 'pyproject.toml', 'uv.lock'], cwd=repo_root)
+    exit(1) if not success else None
+
+    result, success = run_command(['git', 'commit', '-m', MESSAGE], cwd=repo_root)
+    exit(1) if not success else None
+
+
+def create_git_tag(TAG, MESSAGE, repo_root):
+    print(f'{sym.item} creating git tag: {TAG}')
+    result, success = run_command(['git', 'tag', TAG, '-m', MESSAGE], cwd=repo_root)
+    exit(1) if not success else None
+
+
+def push_changes(TAG, repo_root):
+    print(f'{sym.item} pushing to remote repository')
+
+    result, success = run_command(['git', 'push'], cwd=repo_root)
+    exit(1) if not success else None
+
+    result, success = run_command(['git', 'push', 'origin', TAG], cwd=repo_root)
+    exit(1) if not success else None

@@ -33,3 +33,7 @@ def show_reminders(reminders):
         print('you have set reminders in your config:')
         for r in reminders or []:
             print(f'{sym.item} {r}')
+
+
+def done():
+    print(f'\n{ac.GREEN}{sym.positive} done! new version registered and tagged.{ac.RESET}\n')
