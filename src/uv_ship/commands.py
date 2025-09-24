@@ -125,8 +125,7 @@ def check_tag(tag, repo_root):
     remote_result, _ = run_command(['git', 'ls-remote', '--tags', 'origin', tag], cwd=repo_root)
 
     if remote_result.stdout.strip():
-        print(f'{sym.negative} Tag {ac.BOLD}{tag}{ac.RESET} already exists on the remote. Aborting.')
-        tag_clear = False
+        msg.failure(f'tag {tag} already exists on the remote.')
 
     if local_result.stdout.strip():
         confirm = (

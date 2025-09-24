@@ -1,6 +1,7 @@
 import click
 
 from . import bump as cmd_bump
+from . import this as cmd_this
 
 
 @click.group(invoke_without_command=True)
@@ -23,15 +24,17 @@ def bump(bump_type, config, dirty):
 
 
 @cli.command()
-def log():
-    """build/show the changelog."""
-    click.echo('Showing changelog...')
+@click.option('--config', type=click.Path(exists=True), help='Path to config file.')
+@click.option('--dirty', is_flag=True, help='Allow dirty working directory.')
+def this(config, dirty):
+    """tag and ship the current state."""
+    cmd_this.this(config=config, dirty=dirty)
 
 
 @cli.command()
-def this():
-    """tag and ship the current state."""
-    click.echo('Showing info about this project...')
+def log():
+    """build/show the changelog."""
+    click.echo('Showing changelog...')
 
 
 if __name__ == '__main__':
