@@ -1158,6 +1158,7 @@ name = "uv-ship"
 version = "0.2.0"
 source = { editable = "." }
 dependencies = [
+    { name = "click" },
     { name = "tomli" },
 ]
 
@@ -1174,7 +1175,10 @@ docs = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "tomli", specifier = ">=2.2.1" }]
+requires-dist = [
+    { name = "click", specifier = ">=8.2.1" },
+    { name = "tomli", specifier = ">=2.2.1" },
+]
 
 [package.metadata.requires-dev]
 dev = [

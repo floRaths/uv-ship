@@ -4,7 +4,7 @@ version = "0.2.0"
 description = "a release workflow streamliner for uv managed python projects"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["tomli>=2.2.1"]
+dependencies = ["tomli>=2.2.1", "click>=8.2.1"]
 
 [dependency-groups]
 dev = [
@@ -16,7 +16,7 @@ dev = [
 docs = ["mkdocs ~= 1.6", "mkdocs-material ~= 9.6"]
 
 [project.scripts]
-uv-ship = "uv_ship.cli:uv_ship_cli"
+uv-ship = "uv_ship.cli:cli"
 
 [build-system]
 requires = ["uv_build"]
@@ -25,3 +25,6 @@ build-backend = "uv_build"
 [tool.uv]
 required-version = ">=0.8.8"
 default-groups = ["dev", "docs"]
+
+[tool.uv-ship]
+release-branch = "dev"
