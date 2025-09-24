@@ -4,6 +4,7 @@ from pathlib import Path
 
 import tomli as tomllib
 
+from .. import messages as msg
 from ..resources import sym
 
 
@@ -43,7 +44,8 @@ def load_config(path: str | None = None, cwd: str = os.getcwd()):
             return None
         settings = _get_settings_from_toml(config_file)
         if not settings:
-            print(f'{sym.negative} No [tool.uv-ship] table found in "{config_file}".')
+            print('failed to load config!')
+            msg.failure(f'no [tool.uv-ship] table found in "{config_file}".')
             return None
 
         source = config_file
