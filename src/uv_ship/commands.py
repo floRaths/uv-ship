@@ -1,7 +1,7 @@
 import subprocess
 
+from . import messages as msg
 from .resources import ac, sym
-from .resources import messages as msg
 
 
 def run_command(args: list, cwd: str = None, print_stdout: bool = False):
@@ -158,30 +158,30 @@ def update_files(package_name, bump):
 def pre_commit_checks():
     print(f'{sym.item} running pre-commit checks')
     _, success = run_command(['pre-commit', 'run', '--all-files'], print_stdout=False)
-    msg.failed_to('run pre-commit checks') if not success else None
+    msg.failure('failed to run pre-commit checks') if not success else None
 
 
 def commit_files(repo_root, MESSAGE):
     print(f'{sym.item} committing file changes')
 
     _, success = run_command(['git', 'add', 'pyproject.toml', 'uv.lock'], cwd=repo_root)
-    msg.failed_to('add files to git') if not success else None
+    msg.failure('failed to add files to git') if not success else None
 
     _, success = run_command(['git', 'commit', '-m', MESSAGE], cwd=repo_root)
-    msg.failed_to('commit changes') if not success else None
+    msg.failure('failed to commit changes') if not success else None
 
 
 def create_git_tag(TAG, MESSAGE, repo_root):
     print(f'{sym.item} creating git tag: {TAG}')
     _, success = run_command(['git', 'tag', TAG, '-m', MESSAGE], cwd=repo_root)
-    msg.failed_to('create git tag') if not success else None
+    msg.failure('failed to create git tag') if not success else None
 
 
 def push_changes(TAG, repo_root):
     print(f'{sym.item} pushing to remote repository')
 
     _, success = run_command(['git', 'push'], cwd=repo_root)
-    msg.failed_to('push file changes') if not success else None
+    msg.failure('failed to push file changes') if not success else None
 
     _, success = run_command(['git', 'push', 'origin', TAG], cwd=repo_root)
-    msg.failed_to('push tag') if not success else None
+    msg.failure('failed to push tag') if not success else None
