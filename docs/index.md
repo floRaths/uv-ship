@@ -1,5 +1,5 @@
 # uv-ship
-<span style="margin-top:-3rem; display:block;">a release workflow streamliner for uv managed python projects</span>
+<span style="margin-top:-3rem; display:block;">a CLI-tool for shipping with uv</span>
 <!-- <br> -->
 
 ---
