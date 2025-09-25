@@ -3,7 +3,7 @@ from . import messages as msg
 from .resources import ac, sym
 
 
-def run_preflight(config, TAG):
+def run_preflight(config, TAG, skip_input: bool = False):
     # check branch
     check_release_branch(config['release_branch'])
 
@@ -11,7 +11,7 @@ def run_preflight(config, TAG):
     check_tags(TAG, config['repo_root'])
 
     # check working tree status
-    check_worktree(config['repo_root'], config['dirty'])
+    check_worktree(config['repo_root'], config['allow_dirty'], skip_input=skip_input)
 
     # all preflight checks passed
     msg.imsg('ready!', icon=sym.positive)
@@ -22,26 +22,24 @@ def run_preflight(config, TAG):
 
 def check_release_branch(release_branch: str):
     if release_branch is False:
-        print(f'{sym.warning} skipping branch check as per configuration [release_branch = false].')
-        on_branch = True
+        msg.warning('skipping branch check as per configuration [release_branch = false].')
+        return
 
     result, success = cmd.run_command(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
     if not success:
-        print(f'{sym.negative} failed to determine current branch.')
-        on_branch = True
+        msg.warning('failed to determine current branch!')
+        return
 
     branch = result.stdout.strip()
     if branch != release_branch:
-        print(f"{sym.negative} you are on branch '{branch}'. uv-ship config requires '{release_branch}'.")
-        on_branch = False
+        msg.failure(f'you are on branch "{branch}". uv-ship config requires "{release_branch}"!')
+        return
     else:
-        print(f'{sym.positive} on release branch "{branch}".')
-        on_branch = True
-
-    exit(1) if not on_branch else None
+        msg.imsg(f'on release branch "{branch}".', icon=sym.positive)
+        return
 
 
-def check_worktree(repo_root, allow_dirty: bool = False):
+def check_worktree(repo_root, allow_dirty: bool = False, skip_input: bool = False):
     """Check for staged/unstaged changes before continuing."""
     result, _ = cmd.run_command(['git', 'status', '--porcelain'], cwd=repo_root)
     lines = result.stdout.splitlines()
@@ -65,7 +63,11 @@ def check_worktree(repo_root, allow_dirty: bool = False):
 
         if unstaged:
             if not allow_dirty:
-                confirm = input(f'{sym.warning} you have unstaged changes. Proceed anyway? [y/N]: ').strip().lower()
+                confirm = (
+                    'y'
+                    if skip_input
+                    else input(f'{sym.warning} you have unstaged changes. Proceed anyway? [y/N]: ').strip().lower()
+                )
                 if confirm not in ('y', 'yes'):
                     msg.abort_by_user()
                 else:

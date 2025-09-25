@@ -12,6 +12,10 @@ def failure(message):
     exit(1)
 
 
+def warning(message):
+    imsg(f'{message}', icon=sym.warning, color=ac.YELLOW)
+
+
 def success(message):
     imsg(f'{message}', icon=sym.positive, color=ac.GREEN)
 
