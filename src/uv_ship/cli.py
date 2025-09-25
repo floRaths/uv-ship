@@ -28,7 +28,7 @@ def cli_next(bump_type, config, dry_run, dirty):
     Possible values:
       \033[34mmajor, minor, patch\033[0m, stable, alpha, beta, rc, post, dev\033[0m
     """
-    cmd_next.next_workflow(bump_type=bump_type, config=config, dry_run=dry_run, dirty=dirty)
+    cmd_next.next_workflow(bump_type=bump_type, config=config, dry_run=dry_run, allow_dirty=dirty)
 
 
 @cli.command(name='tag')
