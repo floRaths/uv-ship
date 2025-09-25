@@ -4,7 +4,7 @@ from . import messages as msg
 from .resources import ac, sym
 
 
-def bump(config: str = None, **kwargs):
+def next_workflow(config: str = None, **kwargs):
     # welcome
     print_header()
 
@@ -20,7 +20,7 @@ def bump(config: str = None, **kwargs):
     package_name, current_version, new_version = cmd.collect_info(config['bump-type'])
 
     # show summary
-    print_command_summary(config['bump-type'], package_name, current_version, new_version)
+    print_command_summary(config, package_name, current_version, new_version)
 
     # Construct tag and message
     TAG, MESSAGE = cmd.tag_and_message(config['tag-prefix'], current_version, new_version)
@@ -68,9 +68,12 @@ def print_header():
     msg.imsg('uv-ship', color=ac.BOLD)  # , end=' - ')
 
 
-def print_command_summary(bump, package_name, current_version, new_version):
+def print_command_summary(config, package_name, current_version, new_version):
+    bump = config['bump-type']
     print(f'bumping to the next {ac.ITALIC}{bump}{ac.RESET} version:')
     print('\n', end='')
+    if 'dry-run' in config:
+        print('THIS IS A DRY RUN - NO CHANGES WILL BE MADE\n')
     print(f'{package_name} {ac.BOLD}{ac.RED}{current_version}{ac.RESET} → {ac.BOLD}{ac.GREEN}{new_version}{ac.RESET}\n')
 
 

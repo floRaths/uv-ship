@@ -1,7 +1,7 @@
 import click
+from click import Choice, Path
 
-from . import bump as cmd_bump
-from . import this as cmd_this
+from . import cmd_next, cmd_this
 
 
 @click.group(invoke_without_command=True)
@@ -12,19 +12,27 @@ def cli(ctx):
     # No subcommand given → show help
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
+        ctx.exit()  # ← ensures it stops cleanly after showing help
 
 
-@cli.command()
-@click.argument('bump-type', type=click.Choice(['patch', 'minor', 'major'], case_sensitive=False))
-@click.option('--config', type=click.Path(exists=True), help='Path to config file.')
+@cli.command(name='next')
+@click.argument('bump-type', type=Choice(['patch', 'minor', 'major', '(dev,...)'], case_sensitive=False))
+@click.option('--config', type=Path(exists=True), help='Path to config file (inferred if not provided).')
+@click.option('--dry-run', is_flag=True, help='Show what would be done without making any changes.')
 @click.option('--dirty', is_flag=True, help='Allow dirty working directory.')
-def bump(bump_type, config, dirty):
-    """bump and ship the project version."""
-    cmd_bump.bump(bump_type=bump_type, config=config, dirty=dirty)
+def cli_next(bump_type, config, dry_run, dirty):
+    """
+    \033[32m\033[1mnext:\033[0m bump and ship the next project version.
+
+    \b
+    Possible values:
+      \033[34mmajor, minor, patch\033[0m, stable, alpha, beta, rc, post, dev\033[0m
+    """
+    cmd_next.next_workflow(bump_type=bump_type, config=config, dry_run=dry_run, dirty=dirty)
 
 
-@cli.command()
-@click.option('--config', type=click.Path(exists=True), help='Path to config file.')
+@cli.command(name='this')
+@click.option('--config', type=Path(exists=True), help='Path to config file.')
 @click.option('--dirty', is_flag=True, help='Allow dirty working directory.')
 def this(config, dirty):
     """tag and ship the current state."""
