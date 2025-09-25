@@ -23,8 +23,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version-file: 'pyproject.toml'
-        # with:
-        #   python-version-file: ".python-version"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -34,12 +32,11 @@ jobs:
       - name: Build
         run: uv build
 
-      # # Optional but recommended quick checks of the built artifacts:
-      # - name: Smoke test (wheel)
-      #   run: uv run --isolated --no-project --with dist/*.whl tests/smoke_test.py
+      - name: Smoke test (wheel)
+        run: uv run --isolated --no-project --with dist/*.whl tests/test_preflight.py
 
-      # - name: Smoke test (sdist)
-      #   run: uv run --isolated --no-project --with dist/*.tar.gz tests/smoke_test.py
+      - name: Smoke test (sdist)
+        run: uv run --isolated --no-project --with dist/*.tar.gz tests/test_preflight.py
 
       - name: Publish
         run: uv publish
