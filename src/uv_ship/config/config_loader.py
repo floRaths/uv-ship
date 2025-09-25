@@ -16,7 +16,7 @@ def _get_settings_from_toml(file: Path):
     return data.get('tool', {}).get('uv-ship')
 
 
-def load_config(path: str | None = None, cwd: str = os.getcwd()):
+def load_config(path: str | None = None, cwd: str = os.getcwd(), cmd_args: dict = {}):
     """
     Load uv-ship configuration with the following precedence:
     1. Explicit path (if provided)
@@ -88,4 +88,13 @@ def load_config(path: str | None = None, cwd: str = os.getcwd()):
     print(f'config source: "{source}"')
     default_settings.update(settings)
 
-    return default_settings if default_settings else exit(1)
+    default_settings = {k.replace('-', '_'): v for k, v in default_settings.items()}
+
+    config = default_settings if default_settings else exit(1)
+
+    # args = {k.replace('-', '_'): v for k, v in config.items()}
+    config.update(cmd_args)
+
+    config['repo_root'] = str(cwd)
+
+    return config
