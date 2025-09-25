@@ -64,8 +64,13 @@ def update_files(config, package_name):
     msg.imsg(f'updating {package_name} version', icon=sym.item)
 
     if not config['dry_run']:
-        _, success = run_command(['uv', 'version', '--bump', config['bump_type']])
-        exit(1) if not success else None
+        if 'bump_type' in config:
+            _, success = run_command(['uv', 'version', '--bump', config['bump_type']])
+            exit(1) if not success else None
+
+        if 'version' in config:
+            _, success = run_command(['uv', 'version', config['version']])
+            exit(1) if not success else None
 
 
 def commit_files(config, MESSAGE):

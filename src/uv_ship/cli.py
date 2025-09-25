@@ -1,7 +1,7 @@
 import click
 from click import Choice, Path
 
-from . import cmd_next, cmd_this
+from . import cmd_next, cmd_tag
 
 
 @click.group(invoke_without_command=True)
@@ -31,12 +31,14 @@ def cli_next(bump_type, config, dry_run, dirty):
     cmd_next.next_workflow(bump_type=bump_type, config=config, dry_run=dry_run, dirty=dirty)
 
 
-@cli.command(name='this')
+@cli.command(name='tag')
+@click.argument('version', type=str)
 @click.option('--config', type=Path(exists=True), help='Path to config file.')
+@click.option('--dry-run', is_flag=True, help='Show what would be done without making any changes.')
 @click.option('--dirty', is_flag=True, help='Allow dirty working directory.')
-def this(config, dirty):
-    """tag and ship the current state."""
-    cmd_this.this(config=config, dirty=dirty)
+def cli_tag(version, config, dry_run, dirty):
+    """tag and ship a specific version."""
+    cmd_tag.tag_workflow(version=version, config=config, dry_run=dry_run, dirty=dirty)
 
 
 @cli.command()

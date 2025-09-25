@@ -5,13 +5,13 @@ from .resources import ac, sym
 
 def run_preflight(config, TAG):
     # check branch
-    ensure_branch(config['release_branch'])
+    check_release_branch(config['release_branch'])
 
     # check tag status
-    check_tag(TAG, config['repo_root'])
+    check_tags(TAG, config['repo_root'])
 
     # check working tree status
-    ensure_clean_tree(config['repo_root'], config['dirty'])
+    check_worktree(config['repo_root'], config['dirty'])
 
     # all preflight checks passed
     msg.imsg('ready!', icon=sym.positive)
@@ -20,7 +20,7 @@ def run_preflight(config, TAG):
     show_reminders(config['reminders'])
 
 
-def ensure_branch(release_branch: str):
+def check_release_branch(release_branch: str):
     if release_branch is False:
         print(f'{sym.warning} skipping branch check as per configuration [release_branch = false].')
         on_branch = True
@@ -41,7 +41,7 @@ def ensure_branch(release_branch: str):
     exit(1) if not on_branch else None
 
 
-def ensure_clean_tree(repo_root, allow_dirty: bool = False):
+def check_worktree(repo_root, allow_dirty: bool = False):
     """Check for staged/unstaged changes before continuing."""
     result, _ = cmd.run_command(['git', 'status', '--porcelain'], cwd=repo_root)
     lines = result.stdout.splitlines()
@@ -80,7 +80,7 @@ def ensure_clean_tree(repo_root, allow_dirty: bool = False):
     exit(1) if not tree_clean else None
 
 
-def check_tag(tag, repo_root):
+def check_tags(tag, repo_root):
     local_result, _ = cmd.run_command(['git', 'tag', '--list', tag], cwd=repo_root)
     remote_result, _ = cmd.run_command(['git', 'ls-remote', '--tags', 'origin', tag], cwd=repo_root)
 

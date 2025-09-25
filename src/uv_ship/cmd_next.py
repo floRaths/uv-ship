@@ -14,7 +14,6 @@ def next_workflow(config: str = None, **kwargs):
 
     # Load config
     config = cfg.load_config(path=config, cwd=repo_root, cmd_args=kwargs)
-    print(config)
 
     # dry run to collect all info first
     package_name, current_version, new_version = cmd.collect_info(config['bump_type'])
@@ -62,7 +61,7 @@ def print_command_summary(config, package_name, current_version, new_version):
     print('\n', end='')
 
     if config['dry_run']:
-        msg.imsg('>> THIS IS A DRY RUN - NO CHANGES WILL BE PUSHED <<\n', color=ac.DIM)
+        msg.imsg('>> THIS IS A DRY RUN - NO CHANGES WILL BE MADE <<\n', color=ac.DIM)
 
     print(f'{package_name} {ac.BOLD}{ac.RED}{current_version}{ac.RESET} → {ac.BOLD}{ac.GREEN}{new_version}{ac.RESET}\n')
 
