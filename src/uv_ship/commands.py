@@ -41,15 +41,6 @@ def tag_and_message(tag_prefix: str, current_version: str, new_version: str):
     return TAG, MESSAGE
 
 
-def get_changelog():
-    tag_res, ok = run_command(['git', 'describe', '--tags', '--abbrev=0'])
-    base = tag_res[0].strip() if isinstance(tag_res, tuple) else tag_res.stdout.strip()
-
-    result, _ = run_command(['git', 'log', f'{base}..HEAD', '--pretty=format:- %s'], print_stdout=False)
-
-    return result.stdout
-
-
 def get_version_str(return_project_name: bool = False):
     result, _ = run_command(['uv', 'version', '--color', 'never'])
     project_name, version = result.stdout.strip().split(' ')
