@@ -98,6 +98,26 @@ def has_tag(changelog_path: str | Path, tag: str) -> bool:
     return span[0] is not None
 
 
+def show_changelog(content: str, print_n_sections: int | None, header_level: int = 2):
+    if print_n_sections is not None:
+        # split on section headers of the same level
+        section_re = re.compile(rf'^(#{{{header_level}}}\s+.*$)', re.M)
+        parts = section_re.split(content)
+
+        first_line = f'\n{msg.ac.BOLD}Updated CHANGELOG{msg.ac.RESET} (showing {print_n_sections} sections)\n\n'
+
+        # parts alternates: [prefix_text, header1, body1, header2, body2, …]
+        rendered = [first_line]
+        for i in range(1, len(parts), 2):  # step through header/body pairs
+            rendered.append(parts[i])  # header
+            rendered.append(parts[i + 1])  # body
+            if len(rendered) // 2 >= print_n_sections:
+                break
+        print(''.join(rendered))
+    else:
+        print(content)
+
+
 def update_changelog(
     changelog_path: str,
     prev_tag: str,
@@ -108,13 +128,18 @@ def update_changelog(
     save: bool = True,
     show_result: bool = True,
     print_n_sections: int | None = None,
+    replace_latest: bool = False,
 ):
     content = _read_changelog(changelog_path)
 
     new_section = prepare_new_section(new_tag, header_level, add_date)
 
+    latest_span = _find_section_span(content, 'latest', header_level)
+
+    new_span = latest_span if replace_latest else _find_section_span(content, new_tag, header_level)
+
     # If new_tag exists, replace its body (up to next header)
-    new_span = _find_section_span(content, new_tag, header_level)
+    # new_span = _find_section_span(content, new_tag, header_level)
     if new_span[0] is not None:
         if not overwrite_if_exists:
             raise ValueError(f'Section for {new_tag} already exists.')
@@ -135,20 +160,4 @@ def update_changelog(
         Path(changelog_path).write_text(updated, encoding='utf-8')
 
     if show_result:
-        if print_n_sections is not None:
-            # split on section headers of the same level
-            section_re = re.compile(rf'^(#{{{header_level}}}\s+.*$)', re.M)
-            parts = section_re.split(updated)
-
-            first_line = f'\n{msg.ac.BOLD}Updated CHANGELOG{msg.ac.RESET} (showing {print_n_sections} sections)\n\n'
-
-            # parts alternates: [prefix_text, header1, body1, header2, body2, …]
-            rendered = [first_line]
-            for i in range(1, len(parts), 2):  # step through header/body pairs
-                rendered.append(parts[i])  # header
-                rendered.append(parts[i + 1])  # body
-                if len(rendered) // 2 >= print_n_sections:
-                    break
-            print(''.join(rendered))
-        else:
-            print(updated)
+        show_changelog(content=updated, print_n_sections=print_n_sections, header_level=header_level)

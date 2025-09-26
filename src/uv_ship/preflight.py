@@ -1,3 +1,4 @@
+from . import changelogger as cl
 from . import commands as cmd
 from . import messages as msg
 from .resources import ac, sym
@@ -13,11 +14,31 @@ def run_preflight(config, TAG, skip_input: bool = False):
     # check working tree status
     check_worktree(config['repo_root'], config['allow_dirty'], skip_input=skip_input)
 
+    confirm = input(f'{sym.warning} update changelog? [y/N]: ').strip().lower()
+
+    if confirm in ('y', 'yes'):
+        res, _ = cmd.run_command(['git', 'describe', '--tags', '--abbrev=0'])
+        prev_tag = res.stdout.strip()
+        print(f'updating CHANGELOG with new section {ac.BOLD}{TAG}{ac.RESET}...')
+        cl.update_changelog(
+            'CHANGELOG',
+            prev_tag=prev_tag,
+            new_tag=TAG,
+            save=True,
+            print_n_sections=3,
+            header_level=2,
+            show_result=False,
+            replace_latest=True,
+        )
+
+    # if cl.has_tag('CHANGELOG', 'latest'):
+    #     print(f'found existing "latest" section in CHANGELOG, update and replace with {TAG}?\n')
+
     # all preflight checks passed
     msg.imsg('ready!', icon=sym.positive)
 
-    # show reminders if any
-    show_reminders(config['reminders'])
+    # # show reminders if any
+    # show_reminders(config['reminders'])
 
 
 def check_release_branch(release_branch: str):
