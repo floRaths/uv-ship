@@ -85,7 +85,10 @@ markdown_extensions:
 
   - pymdownx.snippets:
       check_paths: true
-      base_path: docs
+      base_path:
+        - docs
+        - .
+      # base_path: relative $docs_dir
 
   - pymdownx.details
 

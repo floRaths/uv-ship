@@ -1,0 +1,11 @@
+# Changelog
+
+## v0.2.0 — [2025-09-23]
+
+- [main] set to be the new base branch
+- official initialization of the project
+
+## pre v0.2 — [2025-09-22/23]
+
+- initial construction phase (squashed)
+- releases have been yanked on PyPI
