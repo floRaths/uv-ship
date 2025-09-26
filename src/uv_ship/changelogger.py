@@ -2,12 +2,8 @@ import re
 from datetime import date
 from pathlib import Path
 
-# import uv_ship
 from . import commands as cmd
-
-# # get the root of the repo relative to the package
-# root = Path(uv_ship.__file__).resolve().parent.parent.parent
-# changelog_path = root / 'CHANGELOG'
+from . import messages as msg
 
 HEADER_ANY = re.compile(r'^#{1,6}\s+.*$', re.M)
 
@@ -76,29 +72,46 @@ def _normalize_bullets(text: str) -> str:
     return '\n'.join(lines) + '\n'
 
 
-def update_changelog(
-    path: str,
-    prev_tag: str,
-    new_tag: str,
-    header_level: int = 2,
-    add_date: bool = True,
-    overwrite_if_exists: bool = True,
-    save: bool = True,
-):
-    commits: str = get_changelog()
+def _read_changelog(changelog_path: str | Path) -> str:
+    p = Path(changelog_path) if isinstance(changelog_path, str) else changelog_path
+    if not p.exists():
+        raise FileNotFoundError(f'Changelog file {changelog_path} does not exist.')
+    return p.read_text(encoding='utf-8')
 
-    path = Path(path)
-    content = path.read_text(encoding='utf-8')
 
-    # Prepare new header
+def prepare_new_section(new_tag: str, header_level: int = 2, add_date: bool = True) -> str:
     today = date.today().isoformat() if add_date else None
     header_line = f'{"#" * header_level} {new_tag}'
     if today:
         header_line += f' — [{today}]'
     header_line += '\n'
 
+    commits = get_changelog()
     body = _normalize_bullets(commits)
     new_section = f'{header_line}\n{body}\n'
+    return new_section
+
+
+def has_tag(changelog_path: str | Path, tag: str) -> bool:
+    content = _read_changelog(changelog_path)
+    span = _find_section_span(content, tag, level=2)
+    return span[0] is not None
+
+
+def update_changelog(
+    changelog_path: str,
+    prev_tag: str,
+    new_tag: str,
+    header_level: int = 2,
+    add_date: bool = True,
+    overwrite_if_exists: bool = True,
+    save: bool = True,
+    show_result: bool = True,
+    print_n_sections: int | None = None,
+):
+    content = _read_changelog(changelog_path)
+
+    new_section = prepare_new_section(new_tag, header_level, add_date)
 
     # If new_tag exists, replace its body (up to next header)
     new_span = _find_section_span(content, new_tag, header_level)
@@ -119,6 +132,23 @@ def update_changelog(
         updated = prefix + new_section + ('\n' if not suffix.startswith('#') else '') + suffix
 
     if save:
-        path.write_text(updated, encoding='utf-8')
+        Path(changelog_path).write_text(updated, encoding='utf-8')
 
-    print(updated)
+    if show_result:
+        if print_n_sections is not None:
+            # split on section headers of the same level
+            section_re = re.compile(rf'^(#{{{header_level}}}\s+.*$)', re.M)
+            parts = section_re.split(updated)
+
+            first_line = f'\n{msg.ac.BOLD}Updated CHANGELOG{msg.ac.RESET} (showing {print_n_sections} sections)\n\n'
+
+            # parts alternates: [prefix_text, header1, body1, header2, body2, …]
+            rendered = [first_line]
+            for i in range(1, len(parts), 2):  # step through header/body pairs
+                rendered.append(parts[i])  # header
+                rendered.append(parts[i + 1])  # body
+                if len(rendered) // 2 >= print_n_sections:
+                    break
+            print(''.join(rendered))
+        else:
+            print(updated)

@@ -17,7 +17,7 @@ def tag_and_message(tag_prefix: str, current_version: str):
     return TAG, MESSAGE
 
 
-def tag_workflow(config: str = None, **kwargs):
+def workflow(config: str = None, **kwargs):
     # welcome
     print_header()
 

@@ -5,7 +5,7 @@ from . import preflight as prf
 from .resources import ac
 
 
-def next_workflow(config: str = None, **kwargs):
+def workflow(config: str = None, **kwargs):
     # welcome
     print_header()
 
