@@ -80,14 +80,14 @@ def prepare_new_section(new_tag: str, add_date: bool = True, level: int = H_LVL)
     return new_section
 
 
-def show_changelog(content: str, print_n_sections: int | None, level: int = H_LVL):
+def show_changelog(content: str, clog_file: str, print_n_sections: int | None, level: int = H_LVL):
     if print_n_sections is not None:
         # split on section headers of the same level
         section_re = re.compile(rf'^(#{{{level}}}\s+.*$)', re.M)
         parts = section_re.split(content)
 
         report_n = print_n_sections if print_n_sections != 1 else 'latest'
-        first_line = f'\n{msg.ac.BOLD}Updated CHANGELOG{msg.ac.RESET} (showing {report_n} sections)\n\n'
+        first_line = f'\n{msg.ac.BOLD}Updated {clog_file}{msg.ac.RESET} (showing {report_n} sections)\n\n'
 
         rendered = [first_line]
         for i in range(1, len(parts), 2):  # step through header/body pairs
@@ -157,4 +157,4 @@ def update_changelog(config: dict, tag: str, save: bool = True, show_result: int
         clog_path.write_text(clog_updated, encoding='utf-8')
 
     if show_result > 0:
-        show_changelog(content=clog_updated, print_n_sections=show_result)
+        show_changelog(content=clog_updated, clog_file=config['changelog_path'], print_n_sections=show_result)

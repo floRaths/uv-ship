@@ -1,6 +1,7 @@
 # uv-ship
-<span style="margin-top:-3rem; display:block;">a CLI-tool for shipping with uv</span>
-<!-- <br> -->
+<div style="margin-top:-3rem; display:block;">
+--8<-- "src/uv_ship/resources/tagline.md"
+</div>
 
 ---
 

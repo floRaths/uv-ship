@@ -11,6 +11,10 @@ for cont in path.iterdir():
         with open(cont, 'r') as f:
             ansi_codes = json.load(f)
 
+    if cont.name == 'tagline.md':
+        with open(cont, 'r') as f:
+            tagline = cont.read_text(encoding='utf-8')
+
 
 class Symbols:
     def __init__(self, symbols):

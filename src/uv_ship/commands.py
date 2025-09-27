@@ -4,7 +4,7 @@ from . import messages as msg
 from .resources import sym
 
 
-def run_command(args: list, cwd: str = None, print_stdout: bool = False):
+def run_command(args: list, cwd: str = None, print_stdout: bool = False, print_stderr: bool = True):
     result = subprocess.run(
         args,
         cwd=cwd,
@@ -13,8 +13,8 @@ def run_command(args: list, cwd: str = None, print_stdout: bool = False):
     )
     if print_stdout and result.stdout:
         print(result.stdout)
-    if result.returncode != 0:
-        print('Exit code:', result.returncode)
+    if print_stderr and result.returncode != 0:
+        # print('Exit code:', result.returncode)
         print('Error:', result.stderr)
     return result, result.returncode == 0
 
@@ -28,24 +28,36 @@ def get_latest_tag(fetch: bool = True) -> str:
 
 
 def get_repo_root():
-    result, success = run_command(['git', 'rev-parse', '--show-toplevel'])
+    result, success = run_command(['git', 'rev-parse', '--show-toplevel'], print_stderr=False)
     if not success:
-        print(f'{sym.negative} not inside a Git repository.')
-        exit(1)
+        msg.failure('not inside a Git repository.')
     # else:
     #     print(f"{sym.positive} Inside a Git repository.")
     return result.stdout.strip()
 
 
-def collect_info(bump: str):
-    result, _ = run_command(['uv', 'version', '--bump', bump, '--dry-run', '--color', 'never'])
-    package_name, current_version, _, new_version = result.stdout.strip().split(' ')
-    return package_name, current_version, new_version
+def collect_info(bump: str = None, version: str = None):
+    if bump and not version:
+        result, _ = run_command(['uv', 'version', '--bump', bump, '--dry-run', '--color', 'never'])
+        package_name, current_version, _, new_version = result.stdout.strip().split(' ')
+        return package_name, current_version, new_version
+
+    if version and not bump:
+        result, _ = run_command(['uv', 'version', '--color', 'never'])
+        package_name, current_version = result.stdout.strip().split(' ')
+        return package_name, current_version
+
+    msg.failure('either bump or version must be provided.')
 
 
-def tag_and_message(tag_prefix: str, current_version: str, new_version: str):
+def tag_and_message(tag_prefix: str, new_version: str, current_version: str = None):
     TAG = f'{tag_prefix}{new_version}'
-    MESSAGE = f'new version: {current_version} → {new_version}'
+
+    if current_version:
+        MESSAGE = f'new version: {current_version} → {new_version}'
+    else:
+        MESSAGE = f'new version: {new_version}'
+
     return TAG, MESSAGE
 
 
