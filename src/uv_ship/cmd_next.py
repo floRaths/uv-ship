@@ -1,8 +1,9 @@
+from . import changelogger as cl
 from . import commands as cmd
 from . import config as cfg
 from . import messages as msg
 from . import preflight as prf
-from .resources import ac
+from .resources import ac, sym
 
 
 def workflow(config: str = None, **kwargs):
@@ -26,6 +27,10 @@ def workflow(config: str = None, **kwargs):
 
     # run preflight checks
     prf.run_preflight(config, TAG)
+
+    confirm = input(f'{sym.warning} update changelog? [y/N]: ').strip().lower()
+    if confirm in ('y', 'yes'):
+        cl.update_changelog(config=config, tag=TAG, save=True, show_result=1)
 
     # show operations
     step_by_step_operations()

@@ -1,5 +1,7 @@
 [tool.uv-ship]
 release-branch = "main"
 tag-prefix = "v"
-reminders = ['CHANGELOG.md updated?', 'documentation updated?']
 allow-dirty = false
+changelog-path = "CHANGELOG"
+preflight-prompt = true
+reminders = ['CHANGELOG.md updated?', 'documentation updated?']
