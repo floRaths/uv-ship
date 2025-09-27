@@ -18,7 +18,7 @@ def cli(ctx):
 
 
 @cli.command(name='next')
-@click.argument('bump-type', type=Choice(['patch', 'minor', 'major', '[...]'], case_sensitive=False))
+@click.argument('bump-type', type=Choice(['patch', 'minor', 'major'], case_sensitive=False))
 @click.option('--config', type=Path(exists=True), help='Path to config file (inferred if not provided).')
 @click.option('--dry-run', is_flag=True, help=dry_run_notice)
 @click.option('--dirty', is_flag=True, help='Allow dirty working directory.')

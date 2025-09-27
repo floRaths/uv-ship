@@ -19,6 +19,14 @@ def run_command(args: list, cwd: str = None, print_stdout: bool = False):
     return result, result.returncode == 0
 
 
+def get_latest_tag(fetch: bool = True) -> str:
+    if fetch:
+        _, _ = run_command(['git', 'fetch', '--tags'])
+    res, _ = run_command(['git', 'describe', '--tags', '--abbrev=0'])
+    latest_tag = res.stdout.strip()
+    return latest_tag
+
+
 def get_repo_root():
     result, success = run_command(['git', 'rev-parse', '--show-toplevel'])
     if not success:
