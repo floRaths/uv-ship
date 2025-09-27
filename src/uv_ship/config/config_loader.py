@@ -80,10 +80,6 @@ def load_config(path: str | None = None, cwd: str = os.getcwd(), cmd_args: dict 
         if not (uv_bump_settings or pyproject_settings):
             source = 'default'
             settings = {}
-            # print(
-            #     f'{sym.item} no [tool.uv-ship] config provided in "uv-ship.toml" or "pyproject.toml".\nusing default settings.'
-            # )
-            # return None
 
     print(f'config source: "{source}"')
     default_settings.update(settings)

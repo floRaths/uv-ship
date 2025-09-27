@@ -5,6 +5,8 @@ from . import messages as msg
 
 
 def workflow(**kwargs):
+    config = cfg.load_config(path=kwargs['config'])
+
     if kwargs['dry_run']:
         msg.imsg('\n>> THIS IS A DRY RUN - NO CHANGES WILL BE MADE <<', color=msg.ac.DIM)
 
@@ -24,4 +26,4 @@ def workflow(**kwargs):
 
     else:
         save = kwargs['save'] if not kwargs['dry_run'] else False
-        cl.update_changelog(config=cfg.load_config(), tag=new_tag, save=save, show_result=3)
+        cl.update_changelog(config=config, tag=new_tag, save=save, show_result=3)
