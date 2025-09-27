@@ -4,6 +4,7 @@ from .resources import ac, sym
 
 
 def run_preflight(config, TAG, skip_input: bool = False):
+    msg.imsg('running preflight checks...', icon=None, color=ac.BLUE)
     # check branch
     check_release_branch(config['release_branch'])
 
@@ -14,7 +15,7 @@ def run_preflight(config, TAG, skip_input: bool = False):
     check_worktree(config['repo_root'], config['allow_dirty'], skip_input=skip_input)
 
     # all preflight checks passed
-    msg.imsg('ready!', icon=sym.positive)
+    msg.imsg('preflight passed!\n', icon=sym.positive)
 
     # # show reminders if any
     # show_reminders(config['reminders'])

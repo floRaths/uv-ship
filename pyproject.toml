@@ -28,3 +28,4 @@ default-groups = ["dev", "docs"]
 
 [tool.uv-ship]
 release-branch = "dev"
+allow-dirty = true

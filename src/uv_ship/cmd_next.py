@@ -28,9 +28,23 @@ def workflow(config: str = None, **kwargs):
     # run preflight checks
     prf.run_preflight(config, TAG)
 
-    confirm = input(f'{sym.warning} update changelog? [y/N]: ').strip().lower()
+    confirm = input(f'{ac.BLUE}auto update changelog?{ac.RESET} [y/N]: ').strip().lower()
     if confirm in ('y', 'yes'):
-        cl.update_changelog(config=config, tag=TAG, save=True, show_result=1)
+        save = not config['dry_run']
+        cl.update_changelog(config=config, tag=TAG, save=save, show_result=1)
+        print('')
+        msg.imsg('please consider making manual edits NOW!', icon=sym.item, color=ac.YELLOW)
+    else:
+        msg.imsg('changelog update skipped by user.', icon=sym.item)
+
+    print('')
+    msg.imsg('have you updated the documentation?', icon=None, color=ac.BLUE)
+
+    # all preflight checks passed
+    print('')
+    msg.imsg(f'{"-" * 62}', icon=None)
+    msg.imsg('If everything looks good, you can proceed with the release.', icon=None)
+    # msg.imsg('ready to ship!', icon=sym.positive)
 
     # show operations
     step_by_step_operations()

@@ -95,7 +95,7 @@ def show_changelog(content: str, print_n_sections: int | None, level: int = H_LV
             rendered.append(parts[i + 1])  # body
             if len(rendered) // 2 >= print_n_sections:
                 break
-        print(''.join(rendered))
+        print(''.join(rendered).strip())
     else:
         print(content)
 

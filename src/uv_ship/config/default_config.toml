@@ -3,5 +3,6 @@ release-branch = "main"
 tag-prefix = "v"
 allow-dirty = false
 changelog-path = "CHANGELOG"
+dry-run = false
 preflight-prompt = true
 reminders = ['CHANGELOG.md updated?', 'documentation updated?']

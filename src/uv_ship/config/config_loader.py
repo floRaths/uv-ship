@@ -93,7 +93,7 @@ def load_config(path: str | None = None, cwd: str = os.getcwd(), cmd_args: dict 
     config = default_settings if default_settings else exit(1)
 
     # args = {k.replace('-', '_'): v for k, v in config.items()}
-    config.update(cmd_args)
+    config.update({k: v for k, v in cmd_args.items() if v is not None})
 
     config['repo_root'] = str(cwd)
 

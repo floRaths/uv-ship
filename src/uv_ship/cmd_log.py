@@ -24,4 +24,4 @@ def workflow(**kwargs):
 
     else:
         save = kwargs['save'] if not kwargs['dry_run'] else False
-        cl.update_changelog(config=cfg.load_config(), tag=new_tag, save=save, show_result=True)
+        cl.update_changelog(config=cfg.load_config(), tag=new_tag, save=save, show_result=3)

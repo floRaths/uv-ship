@@ -20,8 +20,8 @@ def cli(ctx):
 @cli.command(name='next')
 @click.argument('bump-type', type=Choice(['patch', 'minor', 'major'], case_sensitive=False))
 @click.option('--config', type=Path(exists=True), help='Path to config file (inferred if not provided).')
-@click.option('--dry-run', is_flag=True, help=dry_run_notice)
-@click.option('--dirty', is_flag=True, help='Allow dirty working directory.')
+@click.option('--dry-run', is_flag=True, default=None, help=dry_run_notice)
+@click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
 def cli_next(bump_type, config, dry_run, dirty):
     """
     \033[34mbump and ship the next project version.\033[0m
@@ -36,8 +36,8 @@ def cli_next(bump_type, config, dry_run, dirty):
 @cli.command(name='tag')
 @click.argument('version', type=str)
 @click.option('--config', type=Path(exists=True), help='Path to config file.')
-@click.option('--dry-run', is_flag=True, default=False, help=dry_run_notice)
-@click.option('--dirty', is_flag=True, default=False, help='Allow dirty working directory.')
+@click.option('--dry-run', is_flag=True, default=None, help=dry_run_notice)
+@click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
 def cli_tag(version, config, dry_run, dirty):
     """
     \033[34mtag and ship a specific version.\033[0m
@@ -47,8 +47,8 @@ def cli_tag(version, config, dry_run, dirty):
 
 @cli.command(name='log')
 @click.option('--latest', is_flag=True, help='Show all commits since the last tag.')
-@click.option('--save', is_flag=True, default=False, help='Save changes to the changelog.')
-@click.option('--dry-run', is_flag=True, default=False, help=dry_run_notice)
+@click.option('--save', is_flag=True, default=None, help='Save changes to the changelog.')
+@click.option('--dry-run', is_flag=True, default=None, help=dry_run_notice)
 def log(latest, save, dry_run):
     """
     \033[34mbuild/show the changelog.\033[0m
