@@ -1,4 +1,3 @@
-from . import resources as res
 from .resources import ac, sym
 
 
@@ -32,7 +31,7 @@ def dry_run_warning():
 def welcome_message():
     print('')
     imsg(f'{ac.GREEN}uv-ship', color=ac.BOLD, end=' - ')
-    imsg(res.tagline.strip(), color=None)
+    imsg('a CLI-tool for shipping with uv', color=None)
 
 
 def preflight_complete():

@@ -1,7 +1,7 @@
 # region Site
 site_name: uv-ship
 site_url: https://floraths.github.io/uv-ship/
-site_description: a light tag and release tool for uv managed python projects
+site_description: a CLI-tool for shipping with uv
 
 repo_name: uv-ship
 repo_url: https://github.com/floRaths/uv-ship
@@ -88,7 +88,6 @@ markdown_extensions:
       base_path:
         - docs
         - .
-      # base_path: relative $docs_dir
 
   - pymdownx.details
 
@@ -104,7 +103,7 @@ markdown_extensions:
   - toc:
       title: On this page
       anchorlink: true
-      # toc_depth: 3
+      toc_depth: 3
 
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
@@ -126,8 +125,8 @@ extra_css:
 
 # region Nav
 nav:
-  - introduction: index.md
+  - intro: index.md
   - workflow: workflow.md
-  - features: features.md
+  - reference: features.md
   - config: config.md
   - what's new: changelog.md

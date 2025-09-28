@@ -51,17 +51,17 @@ def cli_next(ctx, bump_type, dirty):
     wfl.cmd_next(config=ctx.obj, bump_type=bump_type, allow_dirty=dirty)
 
 
-# region tag
-@cli.command(name='tag')
+# region version
+@cli.command(name='version')
 @click.argument('version', type=str)
 @click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
 @click.pass_context
-def cli_tag(ctx, version, dirty):
+def cli_version(ctx, version, dirty):
     """
     \b
     \033[34mset, tag, and ship a specific version.\033[0m
     """
-    wfl.cmd_tag(config=ctx.obj, version=version, allow_dirty=dirty)
+    wfl.cmd_version(config=ctx.obj, version=version, allow_dirty=dirty)
 
 
 # region log

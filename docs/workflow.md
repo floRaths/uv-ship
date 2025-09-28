@@ -1,20 +1,39 @@
-## End-to-end workflow
-1. **Collect details** – `uv-ship` runs `uv version --dry-run` to discover the package name, current version, and bump target.
-2. **Preflight checks**
-    - Confirms the active branch matches `release-branch`
-    - Warns about unstaged or staged changes (respecting `allow-dirty` or `--dirty`)
-    - Guards against local or remote tag conflicts
-3. **Changelog assistance** – optional prompt to generate the upcoming section. Accepting it will (when not in dry run) update the configured changelog file.
-4. **File updates** – reruns `uv version` so `pyproject.toml` and `uv.lock` contain the new version string.
-5. **Ship** – stages the touched files, commits them as `new version: {old} → {new}`, creates the Git tag, and pushes both commit and tag to `origin`.
+# release workflow
 
-If you answer anything other than `y`/`yes` to the final confirmation, the process stops without side effects.
+`uv-ship` wraps the essentials of a release into five predictable stages. The flow is the same whether you bump with `uv-ship next` or set an explicit version with `uv-ship version`.
 
-## Release flow in detail
-1. **Collect facts** – Calls `uv version` in dry-run mode to discover the package name and next version.
-2. **Preflight** – Confirms the release branch, detects existing tags locally and remotely, and validates the working tree.
-3. **Changelog assist** – Optionally builds a changelog section from commits since the last Git tag and shows the result before saving.
-4. **Update project files** – Runs `uv version` again (without `--dry-run`) so `pyproject.toml` and `uv.lock` carry the new version.
-5. **Ship** – Stages the changed files, commits them with a standard message, creates the Git tag, and pushes both the commit and the tag.
+at a glance:
+```
+uv-ship next patch
+└─ preview → preflight → changelog → update files → commit/tag/push
+```
 
-Every step emits contextual messages with symbols/colours to highlight what happens next. If at any point you respond with anything other than `y`/`yes`, the tool aborts without side effects.
+---
+
+## 1. preview the version change
+- Prints a colour-coded summary so you can sanity-check the bump before anything changes on disk.
+
+## 2. run preflight checks
+- **branch guard** – compares the active branch with `release-branch` and aborts if they differ (unless you set it to `false`).
+- **tag safety** – checks both local and remote tags for conflicts with the tag that will be generated (`{tag-prefix}{version}`).
+- **working tree status** – inspects Git status and blocks/warns when uncommited changes are present. Override per run with `--dirty` or permanently with `allow-dirty = true` in the config.
+
+## 3. edit changelog (optional)
+- offers to auto-build the next changelog section from commits messages since the previous tag.
+!!! note
+    you will have the chance to tidy up the section before the workflow proceeds with committing the file.
+
+## 4. apply version changes
+- under the hood, `uv-ship` simply calls `uv version` which updates `pyproject.toml` and `uv.lock` to the new version string.
+
+## 5. ship it
+- stages the updated files (`pyproject.toml`, `uv.lock`, and `CHANGELOG`).
+- commits with the message `new version: {old} → {new}`.
+- creates the Git tag and pushes both the commit and the tag to `origin`.
+
+---
+
+## interactive safeguards
+- Use `--dry-run` at the root command to simulate the entire workflow without writing.
+- Every destructive step (changelog save, file updates, push) is hidden behind an interactive confirmation.
+Reply with anything other than `y` or `yes` to abort safely.

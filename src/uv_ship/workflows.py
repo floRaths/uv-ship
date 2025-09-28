@@ -17,7 +17,7 @@ def cmd_next(config: dict, bump_type: str, allow_dirty: bool = None, **kwargs):
     print(f'{package_name} {ac.BOLD}{ac.RED}{current_version}{ac.RESET} → {ac.BOLD}{ac.GREEN}{new_version}{ac.RESET}\n')
 
     # Construct tag and message
-    TAG, MESSAGE = cmd.tag_and_message(config['tag_prefix'], current_version, new_version)
+    TAG, MESSAGE = cmd.tag_and_message(config['tag_prefix'], current_version=current_version, new_version=new_version)
 
     # run preflight checks
     prf.run_preflight(config, TAG)
@@ -49,7 +49,7 @@ def cmd_next(config: dict, bump_type: str, allow_dirty: bool = None, **kwargs):
     msg.success(f'done! new version {new_version} registered and tagged.\n')
 
 
-def cmd_tag(config: dict, version: str, allow_dirty: bool = False, **kwargs):
+def cmd_version(config: dict, version: str, allow_dirty: bool = False, **kwargs):
     # dry run to collect all info first
     package_name, current_version = cmd.collect_info(version=version)
 
@@ -75,13 +75,13 @@ def cmd_tag(config: dict, version: str, allow_dirty: bool = False, **kwargs):
     # # TODO test safeguards
     cmd.update_files(config, package_name)
 
-    # cmd.commit_files(repo_root, MESSAGE)
+    cmd.commit_files(config, MESSAGE)
 
-    # cmd.create_git_tag(TAG, MESSAGE, repo_root)
+    cmd.create_git_tag(config, TAG, MESSAGE)
 
-    # cmd.push_changes(TAG, repo_root)
+    cmd.push_changes(config, TAG)
 
-    # msg.success(f'done! new version {new_version} registered and tagged.\n')
+    msg.success(f'done! new version {version} registered and tagged.\n')
 
 
 def cmd_log(config: dict, latest: bool = False, save: bool = False, **kwargs):

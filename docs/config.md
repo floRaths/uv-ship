@@ -1,47 +1,35 @@
-## Configuration
-The CLI reads settings from a `[tool.uv-ship]` table. You can place it in either `uv-ship.toml` or `pyproject.toml` (project root). Use the `--config` option to point to a custom file.
+# configuration
 
+uv-ship reads user defined settings from a `[tool.uv-ship]` table in a toml file. By default, it will look for such a table in either `uv-ship.toml` or `pyproject.toml` in your project root. Optionally, you can use the `--config` flag to point to a custom file. If no config is provided, uv-ship will fall back to its default settings.
+
+??? quote "the config source is reported every time you invoke `uv-ship`"
+
+    ``` console
+    $ uv-ship
+
+    uv-ship - a CLI-tool for shipping with uv
+    config source: "pyproject.toml"
+    ```
+
+## example configuration
+```toml
+# pyproject.toml
+[tool.uv-ship]
+release-branch = "main"
+tag-prefix = "v"
+allow-dirty = false
+changelog-path = "CHANGELOG"
+```
+
+!!! note
+    If both `uv-ship.toml` and `pyproject.toml` contain a `[tool.uv-ship]` table, the CLI aborts to avoid ambiguous settings.
+
+
+## available settings
 | Key              | Type    | Default     | Description |
 |------------------|---------|-------------|-------------|
 | `release-branch` | string/false | `"main"` | Branch that must be checked out before shipping. Set to `false` to disable the check. |
 | `tag-prefix`     | string  | `"v"`      | Prefix added to the Git tag (e.g. `v1.2.3`). |
 | `allow-dirty`    | bool    | `false`     | Allow staged/unstaged changes to proceed. You can override per-run with `--dirty`. |
-| `changelog-path` | string  | `"CHANGELOG"` | Relative path to the changelog file that `uv-ship log --save` refreshes. |
+| `changelog-path` | string  | `"CHANGELOG"` | Relative path to the changelog file that the changelog feature reads and refreshes. |
 | `dry-run`        | bool    | `false`     | Default dry-run mode (overridden by the CLI flag). |
-| `preflight-prompt` | bool  | `true`      | Display the final confirmation prompt before running Git commands. |
-| `reminders`      | list[str] | `["CHANGELOG.md updated?", "documentation updated?"]` | Optional checklist surfaced during release prompts. |
-
-> If both `uv-ship.toml` and `pyproject.toml` contain a `[tool.uv-ship]` table, `uv-ship` aborts to avoid ambiguous settings.
-
-### Example configuration
-```toml
-# pyproject.toml
-[tool.uv-ship]
-release-branch = "dev"
-tag-prefix = "rel/"
-reminders = ["CHANGELOG.md updated?", "Docs refreshed?"]
-allow-dirty = false
-```
-
-
-
-## Configuration
-`uv-ship` reads its settings from a `[tool.uv-ship]` table. It looks in this order:
-
-1. A file passed with `--config`
-2. `uv-ship.toml` (project root)
-3. `pyproject.toml`
-4. Built-in defaults (`src/uv_ship/config/default_config.toml`)
-
-> Do not define `[tool.uv-ship]` in both `uv-ship.toml` and `pyproject.toml`. The CLI aborts to avoid ambiguity.
-
-```toml
-[tool.uv-ship]
-release-branch = "main"      # Set to false to skip the branch check
-allow-dirty = false           # Permit staged/unstaged changes
-changelog-path = "CHANGELOG"  # Relative to the repo root
-preflight-prompt = true       # Show the final "do you want to proceed?" question
-tag-prefix = "v"             # Prepended to the Git tag name
-dry-run = false               # Default behaviour (overridden by CLI flag)
-reminders = ["CHANGELOG.md updated?", "documentation updated?"]
-```
