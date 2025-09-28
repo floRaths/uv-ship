@@ -127,4 +127,7 @@ extra_css:
 # region Nav
 nav:
   - introduction: index.md
-  - changelog: changelog.md
+  - workflow: workflow.md
+  - features: features.md
+  - config: config.md
+  - what's new: changelog.md

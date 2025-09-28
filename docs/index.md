@@ -1,58 +1,64 @@
+<!-- --8<-- "README.md" -->
 # uv-ship
 <div style="margin-top:-3rem; display:block;">
 --8<-- "src/uv_ship/resources/tagline.md"
 </div>
 
----
-
-## purpose
-uv-ship is a simple tool designed to streamline and error-proof version release tasks in uv managed projects.
-It wraps `uv version --bump` commands with extended functionality to complete the release workflow.
-
-## uv-ship runs in three stages:
-
-#### 1. preflight checks
-- ensures that the correct branch is checked out and new tags don't conflict
-- will warn/abort if your working tree is not clean
-- can post reminders to make sure important release items are completed
-*"CHANGELOG.md updated?"*
-
-#### 2. update the files
-- updates pyproject.toml and uv.lock by calling `uv version --bump <bump_type>`
-
-#### 3. tag and commit the changes
-
-- stages and commits the changed files
-- tags the commit with the new version
-- pushes those changes to the remote repository
+<br>
 
 ---
+`uv-ship` is a lightweight companion to [uv](https://docs.astral.sh/uv/) that removes the risky parts of cutting a release. It verifies the repo state, bumps your project metadata and optionally refreshes the changelog. It then commits, tags & pushes the result, while giving you the chance to review every step.
 
-## requirements
-As the name suggests, uv-ship is designed to complement the 'uv' project manager.
-You can learn how to install and use uv [here](https://docs.astral.sh/uv/).
-It is lightweight with just **1** dependency!
+## Key capabilities
+- **Version automation**: drive uv version to bump or set the next release number, keeping pyproject.toml and uv.lock in sync.
+- **Preflight checks**: guard your release workflow by verifying branch, tags, and a clean working tree before shipping.
+- **Changelog generation**: auto-builds changelog sections from commits since the latest tag.
+- **One-shot release**: stage, commit, tag, and push in a single step.
+- **Dry-run mode**: preview every action before making changes.
 
-## installation
-uv-ship is available on [PyPI](https://pypi.org/project/uv-ship/). To add it to your project:
+---
+## Installation
+Add `uv-ship` to a project managed by uv:
+
 ```console
-$ uv add uv-ship
+uv add uv-ship
 ```
-Or if you want to install uv-ship independent of your project:
+
+Or install it as a standalone CLI tool:
+
 ```console
-$ uv tool install uv-ship
+uv tool install uv-ship
 ```
+
+---
+## Quick start
+1. Ensure your working tree is clean and that you are on the configured release branch.
+2. Run `uv-ship next patch` (or `minor` / `major`).
+3. Review the changelog preview, confirm the prompts, and watch the tag and push finish.
+
+Prefer to set an explicit version? Use `uv-ship tag 1.2.0` instead of bumping.
+
+Need to inspect the changelog first? Run `uv-ship log --latest` to preview commits since the last tag or `uv-ship log --save` to refresh the configured changelog file.
+
+---
+## CLI overview
+- `uv-ship next <bump-type>` – bump `pyproject.toml` & `uv.lock`, update the changelog (optional), commit, tag, push.
+- `uv-ship tag <version>` – set a specific version without calculating the bump. (Commit/tag/push is currently skipped; this workflow is focused on preparing files.)
+- `uv-ship log [--latest] [--save]` – show or persist the changelog section built from commits after the latest tag.
+
+Pass `--dry-run` on the root command to rehearse any of the subcommands without touching disk:
+
+```console
+uv-ship --dry-run next minor
+```
+
+
+---
+## Requirements
+- a project running Python 3.8+
+- [uv 0.7.0](https://docs.astral.sh/uv/) or later on your `PATH`
+- a Git repository
+
 ---
 
-## configuration
-uv-ship reads its configuration from a `[tool.uv-ship]` table in a toml file. By default it will look for such a table in uv-ship.toml or pyproject.toml in the project root.
-Alternatively an explicit config path can be supplied
-
-``` toml
-# pyproject.toml
-[tool.uv-ship]
-release_branch = "master"
-tag_prefix = "v"
-reminders = ['updated CHANGELOG.md?', 'updated documentation?']
-allow_dirty = true
-```
+Happy shipping!
