@@ -3,7 +3,8 @@ name = "uv-ship"
 version = "0.2.0"
 description = "a release workflow streamliner for uv managed python projects"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
 dependencies = ["tomli>=2.2.1", "click>=8.2.1"]
 
 [dependency-groups]
@@ -23,7 +24,7 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [tool.uv]
-required-version = ">=0.8.8"
+required-version = ">=0.7.0"
 default-groups = ["dev", "docs"]
 
 [tool.uv-ship]
