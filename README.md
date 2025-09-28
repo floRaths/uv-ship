@@ -51,7 +51,7 @@ uv-ship --dry-run next minor
 
 ---
 ## Requirements
-- a project running Python 3.8+
+- a project running Python 3.10+
 - [uv 0.7.0](https://docs.astral.sh/uv/) or later on your `PATH`
 - a Git repository
 
