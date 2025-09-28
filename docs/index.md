@@ -52,6 +52,13 @@ Pass `--dry-run` on the root command to rehearse any of the subcommands without 
 uv-ship --dry-run next minor
 ```
 
+---
+## Troubleshooting
+- **Not inside a Git repository** – Run the CLI from within your project checkout.
+- **Not on release branch** – Update your [tool.uv-ship] config or check out the correct branch before retrying.
+- **Tag already exists** – uv-ship will not overwrite tags. Delete or rename the existing tag locally and remotely, then rerun.
+- **Dirty working tree** – Inspect changes with git status --short. Either clean up, or if intentional, pass --dirty (per run) or set allow-dirty = true.
+- **uv not found / fails** – Ensure the uv executable is installed, available in your PATH, and that your project has a valid pyproject.toml.
 
 ---
 ## Requirements
