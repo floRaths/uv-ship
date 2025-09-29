@@ -74,7 +74,7 @@ def find_section_spans(content: str, tag: str, level: int = H_LVL):
 
 def prepare_new_section(new_tag: str, add_date: bool = True, level: int = H_LVL) -> str:
     today = date.today().isoformat() if add_date else None
-    header_line = f'{"#" * level} {new_tag}'
+    header_line = f'{"#" * level} `{new_tag}`'
     if today:
         header_line += f' — [{today}]'
     header_line += '\n'
