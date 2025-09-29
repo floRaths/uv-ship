@@ -130,4 +130,4 @@ nav:
   - workflow: workflow.md
   - reference: features.md
   - config: config.md
-  - what's new: changelog.md
+  - release notes: changelog.md
