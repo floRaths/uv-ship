@@ -9,7 +9,6 @@ on:
 
 jobs:
   Publish:
-    if: github.ref_type == 'tag' && github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: pypi
