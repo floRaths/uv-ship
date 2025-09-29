@@ -1,5 +1,13 @@
 # Changelog
 
+## `v0.3.1` — [2025-09-29]
+
+- changed toc_depth for changelog docs
+- adding backticks to changelog sections
+- added custom toc-depth option
+- Update README.md
+- changed 'what's new' to 'release notes'
+
 ## `v0.3.0` — [2025-09-28]
 
 - renamed cli command 'bump' to 'next'
