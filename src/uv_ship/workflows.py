@@ -5,19 +5,16 @@ from . import preflight as prf
 from .resources import ac, sym
 
 
-def cmd_next(config: dict, bump_type: str, allow_dirty: bool = None, **kwargs):
+def ship(config: dict, version: str, allow_dirty: bool = None, **kwargs):
     # dry run to collect all info first
-    package_name, current_version, new_version = cmd.collect_info(bump=bump_type)
+    package_name, old_version, new_version = cmd.collect_info(version=version)
 
-    config['allow_dirty'] = allow_dirty if allow_dirty is not None else config['allow_dirty']
-
-    # show summary
-    print(f'bumping to the next {ac.ITALIC}{bump_type}{ac.RESET} version:')
-    print('')
-    print(f'{package_name} {ac.BOLD}{ac.RED}{current_version}{ac.RESET} → {ac.BOLD}{ac.GREEN}{new_version}{ac.RESET}\n')
+    print(f'{package_name} {ac.BOLD}{ac.RED}{old_version}{ac.RESET} → {ac.BOLD}{ac.GREEN}{new_version}{ac.RESET}\n')
 
     # Construct tag and message
-    TAG, MESSAGE = cmd.tag_and_message(config['tag_prefix'], current_version=current_version, new_version=new_version)
+    TAG, MESSAGE = cmd.tag_and_message(config['tag_prefix'], current_version=old_version, new_version=new_version)
+
+    config['allow_dirty'] = allow_dirty if allow_dirty is not None else config['allow_dirty']
 
     # run preflight checks
     prf.run_preflight(config, TAG)
@@ -38,7 +35,7 @@ def cmd_next(config: dict, bump_type: str, allow_dirty: bool = None, **kwargs):
     msg.user_confirmation()
 
     # # TODO test safeguards
-    cmd.update_files(config, package_name)
+    cmd.update_files(config, package_name, new_version)
 
     cmd.commit_files(config, MESSAGE)
 
@@ -49,44 +46,8 @@ def cmd_next(config: dict, bump_type: str, allow_dirty: bool = None, **kwargs):
     msg.success(f'done! new version {new_version} registered and tagged.\n')
 
 
-def cmd_version(config: dict, version: str, allow_dirty: bool = False, **kwargs):
-    # dry run to collect all info first
-    package_name, current_version = cmd.collect_info(version=version)
-
-    config['allow_dirty'] = allow_dirty if allow_dirty is not None else config['allow_dirty']
-
-    # show summary
-    # print_command_summary(config, package_name, current_version, version)
-    msg.imsg(f'setting project {package_name} to version {version}:', color=ac.BLUE)
-    print(f'{package_name} {ac.BOLD}{ac.RED}{current_version}{ac.RESET} → {ac.BOLD}{ac.GREEN}{version}{ac.RESET}\n')
-
-    # Construct tag and message
-    TAG, MESSAGE = cmd.tag_and_message(config['tag_prefix'], new_version=version, current_version=current_version)
-
-    # run preflight checks
-    prf.run_preflight(config, TAG)
-
-    # show preflight summary
-    msg.preflight_complete()
-
-    # Interactive confirmation
-    msg.user_confirmation()
-
-    # # TODO test safeguards
-    cmd.update_files(config, package_name)
-
-    cmd.commit_files(config, MESSAGE)
-
-    cmd.create_git_tag(config, TAG, MESSAGE)
-
-    cmd.push_changes(config, TAG)
-
-    msg.success(f'done! new version {version} registered and tagged.\n')
-
-
 def cmd_log(config: dict, latest: bool = False, save: bool = False, **kwargs):
-    res, _ = cmd.run_command(['git', 'describe', '--tags', '--abbrev=0'])
-    prev_tag = res.stdout.strip()
+    prev_tag = cmd.get_latest_tag()
 
     new_tag = 'latest'
 

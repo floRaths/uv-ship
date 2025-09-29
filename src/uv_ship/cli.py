@@ -18,6 +18,12 @@ def cli(ctx, dry_run, config):
 
     repo_root = cmd.get_repo_root()
     uvs_config = cfg.load_config(path=config, cwd=repo_root, cmd_args={'dry_run': dry_run})
+
+    uv_version, _ = cmd.run_command(['uv', 'self', 'version', '--short'], print_stderr=False)
+    if not _:
+        msg.failure('uv is not installed or not available on PATH.')
+    else:
+        msg.imsg(f'uv version {uv_version.stdout.split()[0]}', color=msg.ac.DIM)
     print('')
 
     if uvs_config['dry_run']:
@@ -36,19 +42,27 @@ def cli(ctx, dry_run, config):
 
 # region next
 @cli.command(name='next')
-@click.argument('bump-type', type=Choice(['major', 'minor', 'patch'], case_sensitive=False))
+@click.argument('bump-type', type=Choice(['major', 'minor', 'patch', 'stable'], case_sensitive=False))
+@click.option('--pre-release', type=str, default=None, help='Pre-release component (e.g. alpha, beta).')
 @click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
 @click.pass_context
-def cli_next(ctx, bump_type, dirty):
+def cli_next(ctx, bump_type, pre_release, dirty):
     """
     \033[34mbump and ship the next project version.\033[0m
 
     \b
-    Possible values:
-      \033[32mmajor, minor, patch\033[0m
-      \033[2mnot yet supported: stable, alpha, beta, rc, post, dev\033[0m
+    Possible release types:
+      \033[32mmajor, minor, patch\033[0m, \033[2mstable (if coming from a pre-release)\033[0m
+
+    \b
+    Can be paired with pre-release components:
+      \033[2malpha, beta, rc, post, dev\033[0m
     """
-    wfl.cmd_next(config=ctx.obj, bump_type=bump_type, allow_dirty=dirty)
+    # show summary
+    next_step = bump_type if not pre_release else f'{bump_type} ({pre_release})'
+    msg.imsg(f'bumping to the next {next_step} version:', color=msg.ac.BLUE)
+    version = cmd.calculate_version(bump_type=bump_type, pre_release=pre_release)
+    wfl.ship(config=ctx.obj, version=version, allow_dirty=dirty)
 
 
 # region version
@@ -61,7 +75,8 @@ def cli_version(ctx, version, dirty):
     \b
     \033[34mset, tag, and ship a specific version.\033[0m
     """
-    wfl.cmd_version(config=ctx.obj, version=version, allow_dirty=dirty)
+    msg.imsg('setting a new project version:', color=msg.ac.BLUE)
+    wfl.ship(config=ctx.obj, version=version, allow_dirty=dirty)
 
 
 # region log

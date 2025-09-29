@@ -55,6 +55,7 @@ def check_worktree(repo_root, allow_dirty: bool = False, skip_input: bool = Fals
 
         staged = [line for line in lines if line[0] not in (' ', '?')]  # first column = staged
         unstaged = [line for line in lines if line[1] not in (' ', '?')]  # second column = unstaged
+        untracked = [line for line in lines if line[0:2] == '??']  # second column = unstaged
 
         if staged:
             if not allow_dirty:
@@ -62,7 +63,7 @@ def check_worktree(repo_root, allow_dirty: bool = False, skip_input: bool = Fals
             else:
                 proceed_dirty = True
 
-        if unstaged:
+        if unstaged or untracked:
             if not allow_dirty:
                 confirm = (
                     'y'

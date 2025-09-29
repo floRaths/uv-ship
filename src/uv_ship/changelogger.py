@@ -10,11 +10,15 @@ H_LVL = 2
 
 
 def get_commits():
-    tag_res, _ = cmd.run_command(['git', 'describe', '--tags', '--abbrev=0'])
-    base = tag_res[0].strip() if isinstance(tag_res, tuple) else tag_res.stdout.strip()
+    tag_res, has_tag = cmd.run_command(['git', 'describe', '--tags', '--abbrev=0'], print_stderr=False)
+    base = tag_res.stdout.strip() if has_tag else None
 
-    result, _ = cmd.run_command(['git', 'log', f'{base}..HEAD', '--pretty=format:- %s'], print_stdout=False)
+    if base:
+        log_args = ['git', 'log', f'{base}..HEAD', '--pretty=format:- %s']
+    else:
+        log_args = ['git', 'log', '--pretty=format:- %s']
 
+    result, _ = cmd.run_command(log_args, print_stdout=False)
     return result.stdout
 
 
@@ -24,7 +28,8 @@ def read_changelog(config: dict, clog_path: str | Path = None) -> str:
 
     p = Path(clog_path) if isinstance(clog_path, str) else clog_path
     if not p.exists():
-        raise FileNotFoundError(f'Changelog file {clog_path} does not exist.')
+        p.write_text('# Changelog\n\n## latest', encoding='utf-8')
+
     return p.read_text(encoding='utf-8'), clog_path
 
 
@@ -75,6 +80,9 @@ def prepare_new_section(new_tag: str, add_date: bool = True, level: int = H_LVL)
     header_line += '\n'
 
     commits = get_commits()
+    if len(commits) == 0:
+        commits = '- (no changes since last tag)'
+
     body = _normalize_bullets(commits)
     new_section = f'{header_line}\n{body}\n'
     return new_section
@@ -130,10 +138,12 @@ def update_changelog(config: dict, tag: str, save: bool = True, show_result: int
 
     clog_content, clog_path = read_changelog(config=config)
 
-    latest_tag = cmd.get_latest_tag()  # TODO maybe move this to a separate section
+    latest_tag = cmd.get_latest_tag()
     latest_clog_tag = get_latest_clog_tag(clog_content)
 
-    if latest_clog_tag == latest_tag:
+    if not latest_tag:
+        replace = False
+    elif latest_clog_tag == latest_tag:
         # print('The changelog need to be updated for the last release.')
         replace = False
     elif latest_clog_tag in ('latest', tag):

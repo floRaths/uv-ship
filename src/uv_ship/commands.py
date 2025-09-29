@@ -19,12 +19,13 @@ def run_command(args: list, cwd: str = None, print_stdout: bool = False, print_s
     return result, result.returncode == 0
 
 
-def get_latest_tag(fetch: bool = True) -> str:
+def get_latest_tag(fetch: bool = True) -> str | None:
     if fetch:
-        _, _ = run_command(['git', 'fetch', '--tags'])
-    res, _ = run_command(['git', 'describe', '--tags', '--abbrev=0'])
-    latest_tag = res.stdout.strip()
-    return latest_tag
+        _, _ = run_command(['git', 'fetch', '--tags'], print_stderr=False)
+    res, success = run_command(['git', 'describe', '--tags', '--abbrev=0'], print_stderr=False)
+    if success:
+        return res.stdout.strip()
+    return None
 
 
 def get_repo_root():
@@ -36,18 +37,17 @@ def get_repo_root():
     return result.stdout.strip()
 
 
-def collect_info(bump: str = None, version: str = None):
-    if bump and not version:
-        result, _ = run_command(['uv', 'version', '--bump', bump, '--dry-run', '--color', 'never'])
-        package_name, current_version, _, new_version = result.stdout.strip().split(' ')
-        return package_name, current_version, new_version
+def collect_info(version: str = None):
+    result, _ = run_command(['uv', 'version', version, '--dry-run', '--color', 'never'])
+    package_name, old_version, _, new_version = result.stdout.strip().split(' ')
+    return package_name, old_version, new_version
 
-    if version and not bump:
-        result, _ = run_command(['uv', 'version', '--color', 'never'])
-        package_name, current_version = result.stdout.strip().split(' ')
-        return package_name, current_version
 
-    msg.failure('either bump or version must be provided.')
+def calculate_version(bump_type: str, pre_release: str = None):
+    command = ['uv', 'version', '--dry-run', '--color', 'never', '--bump', bump_type]
+    command = command if not pre_release else command + ['--bump', pre_release]
+    r, _ = run_command(command)
+    return r.stdout.strip().split(' ')[-1]
 
 
 def tag_and_message(tag_prefix: str, new_version: str, current_version: str = None):
@@ -71,17 +71,12 @@ def get_version_str(return_project_name: bool = False):
     return version
 
 
-def update_files(config, package_name):
+def update_files(config, package_name, version):
     msg.imsg(f'updating {package_name} version', icon=sym.item)
 
     if not config['dry_run']:
-        if 'bump_type' in config:
-            _, success = run_command(['uv', 'version', '--bump', config['bump_type']])
-            exit(1) if not success else None
-
-        if 'version' in config:
-            _, success = run_command(['uv', 'version', config['version']])
-            exit(1) if not success else None
+        _, success = run_command(['uv', 'version', version])
+        exit(1) if not success else None
 
 
 def commit_files(config, MESSAGE):

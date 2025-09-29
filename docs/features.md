@@ -16,13 +16,18 @@ usage: `uv-ship [option] command [args]`
 
 calculates the next semantic version (`major`, `minor`, or `patch`), runs the preflight checks, offers to refresh the changelog, updates version metadata, and executes the commit/tag/push sequence unless running as a dry run.
 
-usage: `uv-ship next [options] {major|minor|patch}`
+usage: `uv-ship next [release_version] {major|minor|patch|stable}`
 
 possible values:
-- major, minor, patch
-- not yet supported: stable, alpha, beta, rc, post, dev
+- `major`, `minor`, `patch`, `stable`
+
+can be paired with pre-release components:
+- `alpha`, `beta`, `rc`, `post`, `dev`
+
+to remove pre-release status, pass `stable` as release version
 
 #### options:
+  `--pre-release` Pre-release component (e.g. alpha, beta).
   `--dirty` Allow dirty working directory.
   `--help` Show this message and exit.
 
