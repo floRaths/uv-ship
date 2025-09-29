@@ -4,7 +4,7 @@
 [data-md-color-scheme] {
 
   /* DEFINE VARIABLES - Only these are meant to be changed in the themes */
-  --site-hue: 20;
+  --site-hue: 250;
 
   --surface-val: 10%;
   --surface-sat: 15%;
