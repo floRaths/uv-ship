@@ -28,5 +28,5 @@ required-version = ">=0.7.0"
 default-groups = ["dev", "docs"]
 
 [tool.uv-ship]
-release-branch = "dev"
-allow-dirty = true
+release-branch = "main"
+allow-dirty = false
