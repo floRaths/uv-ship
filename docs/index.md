@@ -35,7 +35,7 @@ uv add uv-ship
 ---
 ## quick start
 
-after installation, set up basic [configurations](config) by placing a `[tool.uv-ship]` table in your `pyrproject.toml`.
+after installation, set up basic [configurations](config.md) by placing a `[tool.uv-ship]` table in your `pyrproject.toml`.
 
 1. Ensure your working tree is clean and that you are on the configured release branch.
 2. Run `uv-ship next patch` (or `minor` / `major`).

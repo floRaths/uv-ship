@@ -1,6 +1,6 @@
 # Changelog
 
-## latest — [2025-09-28]
+## `v0.3.0` — [2025-09-28]
 
 - renamed cli command 'bump' to 'next'
 - introduced cli 'version' command
@@ -9,19 +9,18 @@
 - implemented proper "dry-running"
 - fleshed out docs
 - fixed default flag handling in cli
+- package housekeeping:
+    - updates dependencies and relaxed requirements
+    - added license
+    - started addings tests
+    - gitignore, resources, ansi-codes, etc
 
-package housekeeping:
-- updates dependencies and relaxed requirements
-- added license
-- started addings tests
-- gitignore, resources, ansi-codes, etc
-
-## v0.2.0 — [2025-09-23]
+## `v0.2.0` — [2025-09-23]
 
 - [main] set to be the new base branch
 - official initialization of the project
 
-## pre v0.2 — [2025-09-22/23]
+## `pre v0.2` — [2025-09-22/23]
 
 - initial construction phase (squashed)
 - releases have been yanked on PyPI

@@ -10,6 +10,7 @@ site_author: Flo Raths
 # region Theme
 theme:
   name: material
+  custom_dir: docs/overrides
   logo: assets/package-variant-closed-check.svg
   # favicon: assets/favicon.ico
 
