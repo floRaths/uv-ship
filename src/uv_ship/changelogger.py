@@ -201,48 +201,26 @@ def eval_clog_update_strategy(clog_content: str, new_tag: str, print_eval: bool 
     return strategy, latest_repo_tag, latest_clog_tag
 
 
-def update_changelog(config: dict, new_tag: str, save: bool = True, show_result: int = 0, prompt: bool = False):
-    clog_content, clog_path = read_changelog(config=config)
-
-    strategy = eval_clog_update_strategy(clog_content, new_tag)
-
-    if strategy == 'prompt' and prompt:
-        confirm = input('apply tag or refresh changelog? [r|A]:').strip().lower()
-        if confirm in ('r', 'replace'):
-            strategy = 'replace'
-        else:
-            strategy = 'apply'
-    elif strategy == 'prompt' and not prompt:
-        strategy = 'apply'
-
-    new_section = prepare_new_section(new_tag)
-
-    if strategy == 'update':
-        clog_updated = strategy_update(clog_content, new_section)
-    elif strategy == 'replace':
-        clog_updated = strategy_replace(clog_content, new_section, 'latest')
-    elif strategy == 'apply':
-        clog_updated = strategy_apply(clog_content, new_tag)
-    else:
-        msg.failure(f'unknown changelog update strategy: {strategy}')
-
-    if save:
-        clog_path.write_text(clog_updated, encoding='utf-8')
-
-    if show_result > 0:
-        show_changelog(content=clog_updated, clog_file=config['changelog_path'], print_n_sections=show_result)
-
-
 def execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, save):
     new_section = prepare_new_section(new_tag, add_date=True)
 
     if strategy == 'prompt':
-        print('It looks like the changelog was already updated since the last release.')
-        confirm = input('apply this tag to that section or refresh changelog? [r|A]:').strip().lower()
-        if confirm in ('r', 'replace'):
-            strategy = 'replace'
+        print('It looks like the changelog was already updated since the last release (`latest` is present).')
+
+        msg.imsg('run: `uv-ship log --latest` to compare with latest commits\n', icon=msg.sym.item, color=msg.ac.BLUE)
+
+        if new_tag == 'latest':
+            confirm = input('do you want to refresh the changelog? [y|N]:').strip().lower()
+
+            if confirm in ('y', 'yes'):
+                strategy = 'replace'
+
         else:
-            strategy = 'apply'
+            confirm = input(f'refresh changelog or apply tag {new_tag} to that section? [r|A]:').strip().lower()
+            if confirm in ('r', 'replace'):
+                strategy = 'replace'
+            else:
+                strategy = 'apply'
 
     if strategy == 'update':
         clog_updated = strategy_update(clog_content, new_section)
@@ -258,3 +236,35 @@ def execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, 
 
     if save:
         clog_path.write_text(clog_updated, encoding='utf-8')
+
+
+# def update_changelog(config: dict, new_tag: str, save: bool = True, show_result: int = 0, prompt: bool = False):
+#     clog_content, clog_path = read_changelog(config=config)
+
+#     strategy = eval_clog_update_strategy(clog_content, new_tag)
+
+#     if strategy == 'prompt' and prompt:
+#         confirm = input('apply tag or refresh changelog? [r|A]:').strip().lower()
+#         if confirm in ('r', 'replace'):
+#             strategy = 'replace'
+#         else:
+#             strategy = 'apply'
+#     elif strategy == 'prompt' and not prompt:
+#         strategy = 'apply'
+
+#     new_section = prepare_new_section(new_tag)
+
+#     if strategy == 'update':
+#         clog_updated = strategy_update(clog_content, new_section)
+#     elif strategy == 'replace':
+#         clog_updated = strategy_replace(clog_content, new_section, 'latest')
+#     elif strategy == 'apply':
+#         clog_updated = strategy_apply(clog_content, new_tag)
+#     else:
+#         msg.failure(f'unknown changelog update strategy: {strategy}')
+
+#     if save:
+#         clog_path.write_text(clog_updated, encoding='utf-8')
+
+#     if show_result > 0:
+#         show_changelog(content=clog_updated, clog_file=config['changelog_path'], print_n_sections=show_result)
