@@ -174,29 +174,31 @@ def strategy_replace(clog_content: str, new_section: str, latest_clog_tag: str):
     return clog_updated
 
 
-def eval_clog_update_strategy(clog_content: str, new_tag: str):
+def eval_clog_update_strategy(clog_content: str, new_tag: str, print_eval: bool = False):
     latest_repo_tag = cmd.get_latest_tag()
     latest_clog_tag = get_latest_clog_tag(clog_content)
 
-    # print(f'Latest Git tag: {latest_repo_tag}')
-    # print(f'Latest changelog tag: {latest_clog_tag}')
-
     strategy = 'unknown'
     if not latest_repo_tag:
-        print('No tags found in repository. Can not evaluate changelog update strategy.')
+        if print_eval:
+            print('No tags found in repository. Can not evaluate changelog update strategy.')
         strategy = 'update'
     elif latest_clog_tag == latest_repo_tag:
-        print('The changelog has not been updated since the last release.')
+        if print_eval:
+            print('The changelog has not been updated since the last release.')
         strategy = 'update'
     elif latest_clog_tag in ('latest', new_tag):
-        print('The changelog was already updated since the last release, do you want to apply this tag, or refresh it?')
+        if print_eval:
+            print(
+                'The changelog was already updated since the last release, do you want to apply this tag, or refresh it?'
+            )
         strategy = 'prompt'
     else:
         msg.warning(
             f'latest changelog tag ({latest_clog_tag}) does not match latest Git tag ({latest_repo_tag}).',
         )
         strategy = 'update'
-    return strategy
+    return strategy, latest_repo_tag, latest_clog_tag
 
 
 def update_changelog(config: dict, new_tag: str, save: bool = True, show_result: int = 0, prompt: bool = False):
@@ -229,3 +231,30 @@ def update_changelog(config: dict, new_tag: str, save: bool = True, show_result:
 
     if show_result > 0:
         show_changelog(content=clog_updated, clog_file=config['changelog_path'], print_n_sections=show_result)
+
+
+def execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, save):
+    new_section = prepare_new_section(new_tag, add_date=True)
+
+    if strategy == 'prompt':
+        print('It looks like the changelog was already updated since the last release.')
+        confirm = input('apply this tag to that section or refresh changelog? [r|A]:').strip().lower()
+        if confirm in ('r', 'replace'):
+            strategy = 'replace'
+        else:
+            strategy = 'apply'
+
+    if strategy == 'update':
+        clog_updated = strategy_update(clog_content, new_section)
+    elif strategy == 'replace':
+        clog_updated = strategy_replace(clog_content, new_section, 'latest')
+    elif strategy == 'apply':
+        clog_updated = strategy_apply(clog_content, new_tag)
+    else:
+        msg.failure(f'unknown changelog update strategy: {strategy}')
+
+    show_changelog(content=clog_updated, clog_file=config['changelog_path'], print_n_sections=3)
+    print('')
+
+    if save:
+        clog_path.write_text(clog_updated, encoding='utf-8')

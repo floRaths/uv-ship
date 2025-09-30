@@ -50,8 +50,8 @@ def cli(ctx, dry_run, config):
 
 # region next
 @cli.command(name='next')
-@click.argument('release-type', type=str, panel='Main')
-@click.option('--pre-release', type=str, default=None, help='Pre-release component (e.g. alpha, beta).', required=True)
+@click.argument('release-type', type=str, panel='commands')
+@click.option('--pre-release', type=str, default=None, help='Pre-release component (e.g. alpha, beta).')
 @click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
 @click.pass_context
 def cli_next(ctx, release_type, pre_release, dirty):
@@ -73,7 +73,7 @@ def cli_next(ctx, release_type, pre_release, dirty):
 
 # region version
 @cli.command(name='version')
-@click.argument('version', type=str)
+@click.argument('version', type=str, panel='commands')
 @click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
 @click.pass_context
 def cli_version(ctx, version, dirty):
@@ -86,14 +86,15 @@ def cli_version(ctx, version, dirty):
 
 # region log
 @cli.command(name='log')
+@click.option('--tag', type=str, default='latest', help='Tag to use in the changelog.')
 @click.option('--latest', is_flag=True, help='Show all commits since the last tag.')
 @click.option('--save', is_flag=True, default=None, help='Save changes to the changelog.')
 @click.pass_context
-def log(ctx, latest, save):
+def log(ctx, tag, latest, save):
     """
     build/show the changelog.
     """
-    wfl.cmd_log(config=ctx.obj, latest=latest, save=save)
+    wfl.cmd_log(config=ctx.obj, new_tag=tag, latest=latest, save=save)
 
 
 for name in ('next', 'version', 'log'):

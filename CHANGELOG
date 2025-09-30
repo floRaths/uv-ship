@@ -1,5 +1,11 @@
 # Changelog
 
+## `latest` — [2025-09-30]
+
+- further rich_click theming and settings
+- changelogger assess update strategy
+- replacing click with rich-click
+
 ## `v0.3.1` — [2025-09-29]
 
 - changed toc_depth for changelog docs

@@ -22,7 +22,7 @@ def ship(config: dict, version: str, allow_dirty: bool = None, **kwargs):
     confirm = input(f'{ac.BLUE}auto update changelog?{ac.RESET} [y/N]: ').strip().lower()
     if confirm in ('y', 'yes'):
         save = not config['dry_run']
-        cl.update_changelog(config=config, tag=TAG, save=save, show_result=1)
+        cmd_log(config=config, new_tag=TAG, save=save, show_result=1)
         print('')
         msg.imsg('please consider making manual edits NOW!', icon=sym.item, color=ac.YELLOW)
     else:
@@ -46,24 +46,20 @@ def ship(config: dict, version: str, allow_dirty: bool = None, **kwargs):
     msg.success(f'done! new version {new_version} registered and tagged.\n')
 
 
-def cmd_log(config: dict, latest: bool = False, save: bool = False, **kwargs):
+def cmd_log(config: dict, new_tag: str, latest: bool = False, save: bool = False, **kwargs):
     clog_content, clog_path = cl.read_changelog(config=config)
+    strategy, latest_repo_tag, latest_clog_tag = cl.eval_clog_update_strategy(clog_content, new_tag, print_eval=False)
+    # print(f'changelog update strategy: {strategy}')
 
-    # strategy = cl.eval_clog_update_strategy(clog_content, new_tag)
-
-    prev_tag = cmd.get_latest_tag()
-
-    new_tag = 'latest'
-
-    if latest and not save:
+    if latest:
         print('')
-        msg.imsg(f'commits since last tag {prev_tag}:\n', color=msg.ac.BOLD)
+        msg.imsg(f'commits since last tag in repo: {latest_repo_tag}:\n', color=msg.ac.BOLD)
+        new_section = cl.prepare_new_section(new_tag, add_date=True)
+        print(new_section.strip())
 
-        new_section = cl.prepare_new_section(new_tag, level=2, add_date=True)
-        print(new_section)
-
-        msg.imsg('run: `uv-ship log --save` to add this to CHANGELOG\n', color=msg.ac.BLUE)
+        print('')
+        msg.imsg(f'run: `uv-ship log --save` to add this to {config["changelog_path"]}\n', color=msg.ac.BLUE)
 
     else:
         save = save if not config['dry_run'] else False
-        cl.update_changelog(config=config, tag=new_tag, save=save, show_result=3)
+        cl.execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, save)
