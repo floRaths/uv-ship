@@ -72,5 +72,9 @@ uv-ship --dry-run next minor
 - a Git repository
 
 ---
+## license
+This project is licensed under the MIT license.
+
+---
 
 happy shipping!

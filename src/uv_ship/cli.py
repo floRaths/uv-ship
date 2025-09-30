@@ -1,15 +1,20 @@
-import click
-from click import Choice, Path
+import rich_click as click
 
 from . import commands as cmd
 from . import config as cfg
 from . import messages as msg
 from . import workflows as wfl
 
+click.rich_click.THEME = 'nord-modern'
+
+click.rich_click.COMMANDS_PANEL_TITLE = 'commands'
+click.rich_click.OPTIONS_PANEL_TITLE = 'options'
+click.rich_click.COMMANDS_BEFORE_OPTIONS = True
+
 
 # region cli
 @click.group(invoke_without_command=True)
-@click.option('--config', type=Path(exists=True), help='Path to config file (inferred if not provided).')
+@click.option('--config', type=click.Path(exists=True), help='Path to config file (inferred if not provided).')
 @click.option('--dry-run', is_flag=True, default=False, help='Show what would be done without making any changes.')
 @click.pass_context
 def cli(ctx, dry_run, config):
@@ -24,7 +29,7 @@ def cli(ctx, dry_run, config):
         msg.failure('uv is not installed or not available on PATH.')
     else:
         msg.imsg(f'uv version {uv_version.stdout.split()[0]}', color=msg.ac.DIM)
-    print('')
+    # print('')
 
     if uvs_config['dry_run']:
         msg.dry_run_warning()
@@ -36,19 +41,19 @@ def cli(ctx, dry_run, config):
     # No subcommand given → show help
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
-        print('')
+        # print('')
         ctx.exit()
 
 
 # region next
 @cli.command(name='next')
-@click.argument('bump-type', type=Choice(['major', 'minor', 'patch', 'stable'], case_sensitive=False))
+@click.argument('bump-type', type=click.Choice(['major', 'minor', 'patch', 'stable'], case_sensitive=False))
 @click.option('--pre-release', type=str, default=None, help='Pre-release component (e.g. alpha, beta).')
 @click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
 @click.pass_context
 def cli_next(ctx, bump_type, pre_release, dirty):
     """
-    \033[34mbump and ship the next project version.\033[0m
+    bump and ship the next project version.
 
     \b
     Possible release types:
@@ -72,8 +77,7 @@ def cli_next(ctx, bump_type, pre_release, dirty):
 @click.pass_context
 def cli_version(ctx, version, dirty):
     """
-    \b
-    \033[34mset, tag, and ship a specific version.\033[0m
+    set, tag, and ship a specific version.
     """
     msg.imsg('setting a new project version:', color=msg.ac.BLUE)
     wfl.ship(config=ctx.obj, version=version, allow_dirty=dirty)
@@ -86,7 +90,7 @@ def cli_version(ctx, version, dirty):
 @click.pass_context
 def log(ctx, latest, save):
     """
-    \033[34mbuild/show the changelog.\033[0m
+    build/show the changelog.
     """
     wfl.cmd_log(config=ctx.obj, latest=latest, save=save)
 
