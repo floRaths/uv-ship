@@ -1,10 +1,10 @@
 # Changelog
 
-## `latest` — [2025-09-30]
+## `v0.3.2` — [2025-09-30]
 
-- further rich_click theming and settings
-- changelogger assess update strategy
-- replacing click with rich-click
+- new changelogger routine added with user prompt
+- changelogger now evaluates update strategy
+- replaced click with rich-click
 
 ## `v0.3.1` — [2025-09-29]
 
