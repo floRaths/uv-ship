@@ -19,6 +19,7 @@ def run_command(args: list, cwd: str = None, print_stdout: bool = False, print_s
     return result, result.returncode == 0
 
 
+# TODO this should be re-used in changelogger prepare_new_section
 def get_latest_tag(fetch: bool = True) -> str | None:
     if fetch:
         _, _ = run_command(['git', 'fetch', '--tags'], print_stderr=False)

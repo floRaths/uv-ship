@@ -8,11 +8,18 @@ from . import messages as msg
 HEADER_ANY = re.compile(r'^#{1,6}\s+.*$', re.M)
 H_LVL = 2
 
+tag_format = '`'
+
 
 def get_commits():
+    _, has_commits = cmd.run_command(['git', 'rev-parse', '--quiet', '--verify', 'HEAD'], print_stderr=False)
+    if not has_commits:
+        return 'there are no commits in the repository yet...'
+
     tag_res, has_tag = cmd.run_command(['git', 'describe', '--tags', '--abbrev=0'], print_stderr=False)
     base = tag_res.stdout.strip() if has_tag else None
 
+    # if there is no tag, show all commits
     if base:
         log_args = ['git', 'log', f'{base}..HEAD', '--pretty=format:- %s']
     else:
@@ -22,18 +29,21 @@ def get_commits():
     return result.stdout
 
 
-def read_changelog(config: dict, clog_path: str | Path = None) -> str:
+def read_changelog(config: dict, clog_path: str | Path = None, tag_format: str = tag_format) -> str:
     if not clog_path:
         clog_path = Path(config['repo_root']) / config['changelog_path']
 
     p = Path(clog_path) if isinstance(clog_path, str) else clog_path
+
     if not p.exists():
-        p.write_text('# Changelog\n\n## latest', encoding='utf-8')
+        first_section = prepare_new_section('latest', add_date=True)
+        p.write_text(f'# Changelog\n\n{first_section}', encoding='utf-8')
 
     return p.read_text(encoding='utf-8'), clog_path
 
 
 def _header_re(tag: str, level: int = H_LVL) -> re.Pattern:
+    tag = f'{tag_format}{tag}{tag_format}'
     hashes = '#' * level
     # start of line, "## ", the tag, then either space/end/dash, then the rest of the line
     return re.compile(
@@ -72,19 +82,23 @@ def find_section_spans(content: str, tag: str, level: int = H_LVL):
     return spans
 
 
-def prepare_new_section(new_tag: str, add_date: bool = True, level: int = H_LVL) -> str:
+def prepare_header(tag: str, add_date: bool = True, level: int = H_LVL) -> str:
     today = date.today().isoformat() if add_date else None
-    header_line = f'{"#" * level} `{new_tag}`'
+    header_line = f'{"#" * level} {tag_format}{tag}{tag_format}'
     if today:
         header_line += f' — [{today}]'
-    header_line += '\n'
+    return header_line
+
+
+def prepare_new_section(new_tag: str, add_date: bool = True, level: int = H_LVL) -> str:
+    header_line = prepare_header(new_tag, add_date=add_date, level=level)
 
     commits = get_commits()
     if len(commits) == 0:
         commits = '- (no changes since last tag)'
 
     body = _normalize_bullets(commits)
-    new_section = f'{header_line}\n{body}\n'
+    new_section = f'{header_line}\n\n{body}\n'
     return new_section
 
 
@@ -108,60 +122,107 @@ def show_changelog(content: str, clog_file: str, print_n_sections: int | None, l
         print(content)
 
 
-def insert_new_section(content: str, new_section: str, span: tuple[int, int]) -> str:
+def _insert_content(content: str, new_section: str, span: tuple[int, int]) -> str:
     return content[: span[0]] + new_section + content[span[1] :]
 
 
-def get_latest_clog_tag(clog_content: str) -> str:
+def get_headers(clog_content: str):
     headers = HEADER_ANY.finditer(clog_content)
-    first_header = next((h for h in headers if h.group().startswith('## ')), None)
+
+    clog_headers = []
+    for header in headers:
+        if header.group(0).startswith('##'):
+            clog_headers.append(header)
+
+    return clog_headers
+
+
+def get_latest_clog_tag(clog_content: str, tag_format: str = tag_format) -> str:
+    # headers = HEADER_ANY.finditer(clog_content)
+    headers = get_headers(clog_content)
+    first_header = next((h for h in headers), None)
     first_clog_tag = first_header.group().removeprefix('## ').split(' — ')[0]
-    return first_clog_tag
-
-
-def add_new_section(clog_content: str, new_section: str):
-    headers = HEADER_ANY.finditer(clog_content)
-    first_header = next((h for h in headers if h.group().startswith('## ')), None)
-    span = first_header.start(), first_header.start()
-
-    res = insert_new_section(clog_content, new_section, span)
-    return res
+    return first_clog_tag.strip(tag_format)
 
 
 def replace_section(clog_content: str, new_section: str, span: tuple[int, int]):
-    res = insert_new_section(clog_content, new_section, span)
+    res = _insert_content(clog_content, new_section, span)
     return res
 
 
-def update_changelog(config: dict, tag: str, save: bool = True, show_result: int = 0):
-    new_section = prepare_new_section(tag)
+def strategy_apply(clog_content: str, new_tag: str):
+    span = get_headers(clog_content)[0].span()
+    new_header = prepare_header(new_tag)
+    updated = replace_section(clog_content, new_header, span)
+    return updated
 
-    clog_content, clog_path = read_changelog(config=config)
 
-    latest_tag = cmd.get_latest_tag()
+def strategy_update(clog_content: str, new_section: str):
+    headers = get_headers(clog_content)
+    first_header = next((h for h in headers), None)
+    span = first_header.start(), first_header.start()
+
+    res = _insert_content(clog_content, new_section, span)
+    return res
+
+
+def strategy_replace(clog_content: str, new_section: str, latest_clog_tag: str):
+    spans = find_section_spans(clog_content, latest_clog_tag)
+    if len(spans) > 1:
+        print(f'Warning: Found multiple sections for tag {latest_clog_tag}. Replacing the first one.')
+    clog_updated = replace_section(clog_content, new_section, spans[0])
+    return clog_updated
+
+
+def eval_clog_update_strategy(clog_content: str, new_tag: str):
+    latest_repo_tag = cmd.get_latest_tag()
     latest_clog_tag = get_latest_clog_tag(clog_content)
 
-    if not latest_tag:
-        replace = False
-    elif latest_clog_tag == latest_tag:
-        # print('The changelog need to be updated for the last release.')
-        replace = False
-    elif latest_clog_tag in ('latest', tag):
-        # print('The changelog was already updated for the last release, but needs to be refreshed.')
-        replace = True
+    # print(f'Latest Git tag: {latest_repo_tag}')
+    # print(f'Latest changelog tag: {latest_clog_tag}')
+
+    strategy = 'unknown'
+    if not latest_repo_tag:
+        print('No tags found in repository. Can not evaluate changelog update strategy.')
+        strategy = 'update'
+    elif latest_clog_tag == latest_repo_tag:
+        print('The changelog has not been updated since the last release.')
+        strategy = 'update'
+    elif latest_clog_tag in ('latest', new_tag):
+        print('The changelog was already updated since the last release, do you want to apply this tag, or refresh it?')
+        strategy = 'prompt'
     else:
         msg.warning(
-            f'latest changelog tag ({latest_clog_tag}) does not match latest Git tag ({latest_tag}).',
+            f'latest changelog tag ({latest_clog_tag}) does not match latest Git tag ({latest_repo_tag}).',
         )
-        replace = False
+        strategy = 'update'
+    return strategy
 
-    if not replace:
-        clog_updated = add_new_section(clog_content, new_section)
+
+def update_changelog(config: dict, new_tag: str, save: bool = True, show_result: int = 0, prompt: bool = False):
+    clog_content, clog_path = read_changelog(config=config)
+
+    strategy = eval_clog_update_strategy(clog_content, new_tag)
+
+    if strategy == 'prompt' and prompt:
+        confirm = input('apply tag or refresh changelog? [r|A]:').strip().lower()
+        if confirm in ('r', 'replace'):
+            strategy = 'replace'
+        else:
+            strategy = 'apply'
+    elif strategy == 'prompt' and not prompt:
+        strategy = 'apply'
+
+    new_section = prepare_new_section(new_tag)
+
+    if strategy == 'update':
+        clog_updated = strategy_update(clog_content, new_section)
+    elif strategy == 'replace':
+        clog_updated = strategy_replace(clog_content, new_section, 'latest')
+    elif strategy == 'apply':
+        clog_updated = strategy_apply(clog_content, new_tag)
     else:
-        spans = find_section_spans(clog_content, latest_clog_tag)
-        if len(spans) > 1:
-            print(f'Warning: Found multiple sections for tag {latest_clog_tag}. Replacing the first one.')
-        clog_updated = replace_section(clog_content, new_section, spans[0])
+        msg.failure(f'unknown changelog update strategy: {strategy}')
 
     if save:
         clog_path.write_text(clog_updated, encoding='utf-8')

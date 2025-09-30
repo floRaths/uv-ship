@@ -47,6 +47,10 @@ def ship(config: dict, version: str, allow_dirty: bool = None, **kwargs):
 
 
 def cmd_log(config: dict, latest: bool = False, save: bool = False, **kwargs):
+    clog_content, clog_path = cl.read_changelog(config=config)
+
+    # strategy = cl.eval_clog_update_strategy(clog_content, new_tag)
+
     prev_tag = cmd.get_latest_tag()
 
     new_tag = 'latest'
