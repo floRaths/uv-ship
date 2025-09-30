@@ -1,6 +1,8 @@
 import importlib.resources as resources
 import json
 
+from .rich_click_theme import rich_click as rich_click
+
 path = resources.files('uv_ship.resources')
 for cont in path.iterdir():
     if cont.name == 'symbols.json':

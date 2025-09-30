@@ -1,19 +1,22 @@
-import rich_click as click
-
 from . import commands as cmd
 from . import config as cfg
 from . import messages as msg
 from . import workflows as wfl
+from .resources import rich_click as click
 
-click.rich_click.THEME = 'nord-modern'
-
-click.rich_click.COMMANDS_PANEL_TITLE = 'commands'
-click.rich_click.OPTIONS_PANEL_TITLE = 'options'
-click.rich_click.COMMANDS_BEFORE_OPTIONS = True
+click.rich_click.COMMAND_GROUPS = {
+    'uv-ship': [
+        {'name': 'commands', 'commands': ['next', 'version', 'log']},
+        # {"name": "utilities", "commands": ["log"]},
+    ],
+}
 
 
 # region cli
-@click.group(invoke_without_command=True)
+@click.group(
+    context_settings=dict(help_option_names=['-h', '--help']), invoke_without_command=True, add_help_option=True
+)
+# @click.group(invoke_without_command=True)
 @click.option('--config', type=click.Path(exists=True), help='Path to config file (inferred if not provided).')
 @click.option('--dry-run', is_flag=True, default=False, help='Show what would be done without making any changes.')
 @click.pass_context
@@ -47,26 +50,24 @@ def cli(ctx, dry_run, config):
 
 # region next
 @cli.command(name='next')
-@click.argument('bump-type', type=click.Choice(['major', 'minor', 'patch', 'stable'], case_sensitive=False))
-@click.option('--pre-release', type=str, default=None, help='Pre-release component (e.g. alpha, beta).')
+@click.argument('release-type', type=str, panel='Main')
+@click.option('--pre-release', type=str, default=None, help='Pre-release component (e.g. alpha, beta).', required=True)
 @click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
 @click.pass_context
-def cli_next(ctx, bump_type, pre_release, dirty):
+def cli_next(ctx, release_type, pre_release, dirty):
     """
     bump and ship the next project version.
 
     \b
-    Possible release types:
-      \033[32mmajor, minor, patch\033[0m, \033[2mstable (if coming from a pre-release)\033[0m
-
+    release_types:                major, minor, patch, *stable
+    pair with pre-release:        alpha, beta, rc, post, dev (optional)
     \b
-    Can be paired with pre-release components:
-      \033[2malpha, beta, rc, post, dev\033[0m
+    remove pre-release status:    set release_type to 'stable'
     """
     # show summary
-    next_step = bump_type if not pre_release else f'{bump_type} ({pre_release})'
+    next_step = release_type if not pre_release else f'{release_type} ({pre_release})'
     msg.imsg(f'bumping to the next {next_step} version:', color=msg.ac.BLUE)
-    version = cmd.calculate_version(bump_type=bump_type, pre_release=pre_release)
+    version = cmd.calculate_version(bump_type=release_type, pre_release=pre_release)
     wfl.ship(config=ctx.obj, version=version, allow_dirty=dirty)
 
 
@@ -94,6 +95,10 @@ def log(ctx, latest, save):
     """
     wfl.cmd_log(config=ctx.obj, latest=latest, save=save)
 
+
+for name in ('next', 'version', 'log'):
+    cmmd = cli.commands.pop(name)
+    cli.add_command(cmmd, name=name)
 
 if __name__ == '__main__':
     cli(prog_name='uv-ship')
