@@ -4,7 +4,7 @@ from .run import run_command
 
 def get_git_version(short=False):
     res, _ = run_command(['git', '--version'], print_stderr=False)
-    return res.stdout.strip().split()[-1], _
+    return res.stdout.strip().split()[2], _
 
 
 def get_gh_version(short=False):
