@@ -20,9 +20,14 @@ def collect_info(version: str = None):
 
 
 def calculate_version(bump_type: str, pre_release: str = None):
+    possible_bumps = ['major', 'minor', 'patch', 'stable', 'alpha', 'beta', 'rc', 'post', 'dev']
+    if bump_type not in possible_bumps:
+        msg.failure(f'invalid release type: "{bump_type}"\npossible values: {", ".join(possible_bumps)}')
+
     command = ['uv', 'version', '--dry-run', '--color', 'never', '--bump', bump_type]
     command = command if not pre_release else command + ['--bump', pre_release]
     r, _ = run_command(command)
+
     return r.stdout.strip().split(' ')[-1]
 
 
