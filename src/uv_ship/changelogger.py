@@ -175,7 +175,7 @@ def strategy_replace(clog_content: str, new_section: str, latest_clog_tag: str):
 
 
 def eval_clog_update_strategy(clog_content: str, new_tag: str, print_eval: bool = False):
-    latest_repo_tag = cmd.get_latest_tag()
+    latest_repo_tag = cmd.git.get_latest_tag()
     latest_clog_tag = get_latest_clog_tag(clog_content)
 
     strategy = 'unknown'
@@ -236,35 +236,3 @@ def execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, 
 
     if save:
         clog_path.write_text(clog_updated, encoding='utf-8')
-
-
-# def update_changelog(config: dict, new_tag: str, save: bool = True, show_result: int = 0, prompt: bool = False):
-#     clog_content, clog_path = read_changelog(config=config)
-
-#     strategy = eval_clog_update_strategy(clog_content, new_tag)
-
-#     if strategy == 'prompt' and prompt:
-#         confirm = input('apply tag or refresh changelog? [r|A]:').strip().lower()
-#         if confirm in ('r', 'replace'):
-#             strategy = 'replace'
-#         else:
-#             strategy = 'apply'
-#     elif strategy == 'prompt' and not prompt:
-#         strategy = 'apply'
-
-#     new_section = prepare_new_section(new_tag)
-
-#     if strategy == 'update':
-#         clog_updated = strategy_update(clog_content, new_section)
-#     elif strategy == 'replace':
-#         clog_updated = strategy_replace(clog_content, new_section, 'latest')
-#     elif strategy == 'apply':
-#         clog_updated = strategy_apply(clog_content, new_tag)
-#     else:
-#         msg.failure(f'unknown changelog update strategy: {strategy}')
-
-#     if save:
-#         clog_path.write_text(clog_updated, encoding='utf-8')
-
-#     if show_result > 0:
-#         show_changelog(content=clog_updated, clog_file=config['changelog_path'], print_n_sections=show_result)

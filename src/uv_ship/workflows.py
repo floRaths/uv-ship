@@ -7,12 +7,12 @@ from .resources import ac, sym
 
 def ship(config: dict, version: str, allow_dirty: bool = None, **kwargs):
     # dry run to collect all info first
-    package_name, old_version, new_version = cmd.collect_info(version=version)
+    package_name, old_version, new_version = cmd.gen.collect_info(version=version)
 
     print(f'{package_name} {ac.BOLD}{ac.RED}{old_version}{ac.RESET} → {ac.BOLD}{ac.GREEN}{new_version}{ac.RESET}\n')
 
     # Construct tag and message
-    TAG, MESSAGE = cmd.tag_and_message(config['tag_prefix'], current_version=old_version, new_version=new_version)
+    TAG, MESSAGE = cmd.gen.tag_and_message(config['tag_prefix'], current_version=old_version, new_version=new_version)
 
     config['allow_dirty'] = allow_dirty if allow_dirty is not None else config['allow_dirty']
 
@@ -35,13 +35,13 @@ def ship(config: dict, version: str, allow_dirty: bool = None, **kwargs):
     msg.user_confirmation()
 
     # # TODO test safeguards
-    cmd.update_files(config, package_name, new_version)
+    cmd.gen.update_files(config, package_name, new_version)
 
-    cmd.commit_files(config, MESSAGE)
+    cmd.git.commit_files(config, MESSAGE)
 
-    cmd.create_git_tag(config, TAG, MESSAGE)
+    cmd.git.create_git_tag(config, TAG, MESSAGE)
 
-    cmd.push_changes(config, TAG)
+    cmd.git.push_changes(config, TAG)
 
     msg.success(f'done! new version {new_version} registered and tagged.\n')
 
@@ -63,3 +63,29 @@ def cmd_log(config: dict, new_tag: str, latest: bool = False, save: bool = False
     else:
         save = save if not config['dry_run'] else False
         cl.execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, save)
+
+
+def cmd_status(config: dict):
+    clog_content, _ = cl.read_changelog(config=config)
+    latest_clog_tag = cl.get_latest_clog_tag(clog_content=clog_content)
+    latest_repo_tag = cmd.git.get_latest_tag()
+    repo_root = cmd.git.get_repo_root()
+    project_name, current_version = cmd.gen.get_version_str(return_project_name=True)
+
+    tool_versions = cmd.ver.get_tool_versions()
+
+    def print_k_v(item, value):
+        msg.imsg(f'{item:16}', color=msg.ac.BLUE, end='')
+        msg.imsg(f'- {value}', color=msg.ac.BOLD)
+
+    print('\nInstalled tool versions:')
+    for k, v in tool_versions.items():
+        if v:
+            msg.imsg(f'{k:8}: {v}', color=msg.ac.DIM)
+
+    print('')
+    print_k_v('project', f'{project_name} v{current_version}')
+    print_k_v('repo_root', repo_root)
+    print_k_v('latest repo tag', latest_repo_tag)
+    print_k_v('latest clog tag', latest_clog_tag)
+    print('')

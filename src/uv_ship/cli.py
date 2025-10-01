@@ -6,7 +6,7 @@ from .resources import rich_click as click
 
 click.rich_click.COMMAND_GROUPS = {
     'uv-ship': [
-        {'name': 'commands', 'commands': ['next', 'version', 'log']},
+        {'name': 'commands', 'commands': ['next', 'version', 'log', 'status']},
         # {"name": "utilities", "commands": ["log"]},
     ],
 }
@@ -18,34 +18,39 @@ click.rich_click.COMMAND_GROUPS = {
 )
 # @click.group(invoke_without_command=True)
 @click.option('--config', type=click.Path(exists=True), help='Path to config file (inferred if not provided).')
-@click.option('--dry-run', is_flag=True, default=False, help='Show what would be done without making any changes.')
+@click.option('--dry-run', is_flag=True, default=False, help='Review changes without touching disk.')
+@click.option('--self', is_flag=True, default=False, help='Display uv-ship version.')
 @click.pass_context
-def cli(ctx, dry_run, config):
-    # Show tagline and set up config
-    msg.welcome_message()
-
-    repo_root = cmd.get_repo_root()
-    uvs_config = cfg.load_config(path=config, cwd=repo_root, cmd_args={'dry_run': dry_run})
-
-    uv_version, _ = cmd.run_command(['uv', 'self', 'version', '--short'], print_stderr=False)
-    if not _:
-        msg.failure('uv is not installed or not available on PATH.')
+def cli(ctx, dry_run, config, self):
+    if self:
+        ver = cmd.ver.get_self_version(short=True)
+        click.echo(f'uv-ship {ver[0]}')
     else:
-        msg.imsg(f'uv version {uv_version.stdout.split()[0]}', color=msg.ac.DIM)
-    # print('')
+        # Show tagline and set up config
+        msg.welcome_message()
 
-    if uvs_config['dry_run']:
-        msg.dry_run_warning()
+        repo_root = cmd.git.get_repo_root()
+        uvs_config = cfg.load_config(path=config, cwd=repo_root, cmd_args={'dry_run': dry_run})
 
-    # store config in context so subcommands can use it
-    ctx.ensure_object(dict)
-    ctx.obj = uvs_config
-
-    # No subcommand given → show help
-    if ctx.invoked_subcommand is None:
-        click.echo(ctx.get_help())
+        uv_version, _ = cmd.run_command(['uv', 'self', 'version', '--short'], print_stderr=False)
+        if not _:
+            msg.failure('uv is not installed or not available on PATH.')
+        else:
+            msg.imsg(f'uv version {uv_version.stdout.split()[0]}', color=msg.ac.DIM)
         # print('')
-        ctx.exit()
+
+        if uvs_config['dry_run']:
+            msg.dry_run_warning()
+
+        # store config in context so subcommands can use it
+        ctx.ensure_object(dict)
+        ctx.obj = uvs_config
+
+        # No subcommand given → show help
+        if ctx.invoked_subcommand is None:
+            click.echo(ctx.get_help())
+            # print('')
+            ctx.exit()
 
 
 # region next
@@ -67,7 +72,7 @@ def cli_next(ctx, release_type, pre_release, dirty):
     # show summary
     next_step = release_type if not pre_release else f'{release_type} ({pre_release})'
     msg.imsg(f'bumping to the next {next_step} version:', color=msg.ac.BLUE)
-    version = cmd.calculate_version(bump_type=release_type, pre_release=pre_release)
+    version = cmd.gen.calculate_version(bump_type=release_type, pre_release=pre_release)
     wfl.ship(config=ctx.obj, version=version, allow_dirty=dirty)
 
 
@@ -97,9 +102,15 @@ def log(ctx, tag, latest, save):
     wfl.cmd_log(config=ctx.obj, new_tag=tag, latest=latest, save=save)
 
 
-for name in ('next', 'version', 'log'):
-    cmmd = cli.commands.pop(name)
-    cli.add_command(cmmd, name=name)
+# region log
+@cli.command(name='status')
+@click.pass_context
+def status(ctx):
+    """
+    show project status.
+    """
+    wfl.cmd_status(config=ctx.obj)
+
 
 if __name__ == '__main__':
     cli(prog_name='uv-ship')
