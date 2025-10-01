@@ -38,15 +38,19 @@ def get_self_version(short=False):
 
 def get_tool_versions(print_status=False):
     versions = {
-        'git': {'func': get_git_version(short=True), 'required': True},
-        'github': {'func': get_gh_version(short=True), 'required': False},
-        'uv': {'func': get_uv_version(short=True), 'required': True},
-        'uv-ship': {'func': get_self_version(short=True), 'required': True},
+        'uv': {'func': get_uv_version, 'required': True},
+        'uv-ship': {'func': get_self_version, 'required': True},
+        'git': {'func': get_git_version, 'required': True},
+        'github': {'func': get_gh_version, 'required': False},
     }
 
     results = {}
     for k, param in versions.items():
-        version, _ = param['func']
+        try:
+            version, _ = param['func'](short=True)
+        except Exception:
+            version, _ = None, False
+
         if not _ and param['required']:
             if print_status:
                 msg.failure(f'{k} is not installed or not available on PATH.')
@@ -54,7 +58,7 @@ def get_tool_versions(print_status=False):
         elif not _ and not param['required']:
             if print_status:
                 msg.warning(f'{k} is not installed or not available on PATH.')
-            # version = False
+            results[k] = 'not installed'
         elif _ and param['required']:
             if print_status:
                 msg.success(f'{k} is installed and available on PATH.')
