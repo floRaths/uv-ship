@@ -1,5 +1,9 @@
 # Changelog
 
+## `v0.4.1` — [2025-10-01]
+
+- fix: git version report
+
 ## `v0.4.0` — [2025-09-30]
 
 - better feedback on wrong release type/version input
