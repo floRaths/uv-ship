@@ -1,5 +1,9 @@
 # Changelog
 
+## `v0.4.2` — [2025-10-01]
+
+- fix: version check crashes when tool not available
+
 ## `v0.4.1` — [2025-10-01]
 
 - fix: git version report
