@@ -14,7 +14,10 @@ def get_version_str(return_project_name: bool = False):
 
 
 def collect_info(version: str = None):
-    result, _ = run_command(['uv', 'version', version, '--dry-run', '--color', 'never'])
+    result, _ = run_command(['uv', 'version', version, '--dry-run', '--color', 'never'], print_stderr=False)
+    if not _:
+        msg.failure(result.stderr.strip())
+
     package_name, old_version, _, new_version = result.stdout.strip().split(' ')
     return package_name, old_version, new_version
 
@@ -22,13 +25,13 @@ def collect_info(version: str = None):
 def calculate_version(bump_type: str, pre_release: str = None):
     possible_bumps = ['major', 'minor', 'patch', 'stable', 'alpha', 'beta', 'rc', 'post', 'dev']
     if bump_type not in possible_bumps:
-        msg.failure(f'invalid release type: "{bump_type}"\npossible values: {", ".join(possible_bumps)}')
+        msg.failure(f'invalid release type: "{bump_type}"\n  possible values: {", ".join(possible_bumps)}')
 
     command = ['uv', 'version', '--dry-run', '--color', 'never', '--bump', bump_type]
     command = command if not pre_release else command + ['--bump', pre_release]
-    r, _ = run_command(command)
+    res, _ = run_command(command, print_stderr=False)
 
-    return r.stdout.strip().split(' ')[-1]
+    return res.stdout.strip().split(' ')[-1]
 
 
 def tag_and_message(tag_prefix: str, new_version: str, current_version: str = None):
