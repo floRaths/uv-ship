@@ -1,5 +1,9 @@
 # Changelog
 
+## `v0.5.2` — [2025-10-02]
+
+- fix: issue#4 - missing changelog can not be committed
+
 ## `v0.5.1` — [2025-10-01]
 
 - fix: trailing-whitespace hook breaking my docs list
