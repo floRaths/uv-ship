@@ -11,10 +11,10 @@ The main entrypoint to access uv-ship features
 <span class="acc-2-text">**usage:**</span> `uv-ship [options] command [args]`
 
 > ##### options:
-> `--config` Path to config file (inferred if not provided).
-> `--dry-run` Show what would be done without making any changes.
-> `--self` Display uv-ship version.
-> `--help` Show a help message and exit.
+> `--config` Path to config file (inferred if not provided).  
+> `--dry-run` Show what would be done without making any changes.  
+> `--self` Display uv-ship version.  
+> `--help` Show a help message and exit.  
 
 ---
 
@@ -26,19 +26,19 @@ Calculates the next semantic version (`major`, `minor`, or `patch`), runs the pr
 
 <span class="acc-2-text">**usage:**</span> `uv-ship next [options] RELEASE_TYPE`
 
-possible values:
+possible values:  
 `major`, `minor`, `patch`, `stable`
 
-can be paired with pre-release components:
+can be paired with pre-release components:  
 `alpha`, `beta`, `rc`, `post`, `dev`
 
 to remove pre-release status, pass `stable` as release version
 
 
 > ##### options:
-> `--pre-release` Pre-release component (e.g. alpha, beta).
-> `--dirty` Allow dirty working directory.
-> `--help` Show this message and exit.
+> `--pre-release` Pre-release component (e.g. alpha, beta).  
+> `--dirty` Allow dirty working directory.  
+> `--help` Show this message and exit.  
 
 ---
 
@@ -48,8 +48,8 @@ Prepares and ships the provided version. This path allows you to break out of se
 <span class="acc-2-text">**usage:**</span> `uv-ship version [options] {VERSION}`
 
 > ##### options:
-> `--dirty` Allow dirty working directory.
-> `--help` Show this message and exit.
+> `--dirty` Allow dirty working directory.  
+> `--help` Show this message and exit.  
 
 ---
 
@@ -59,9 +59,9 @@ Builds a changelog section from commits since the latest Git tag. Use `--latest`
 <span class="acc-2-text">**usage:**</span> `uv-ship log [options]`
 
 > ##### options:
-> `--latest` Show all commits since the last tag.
-> `--save` Save changes to the changelog.
-> `--help` Show this message and exit.
+> `--latest` Show all commits since the last tag.  
+> `--save` Save changes to the changelog.  
+> `--help` Show this message and exit.  
 
 ---
 
@@ -71,7 +71,7 @@ Display a status report for the current package.
 <span class="acc-2-text">**usage:**</span> `uv-ship status`
 
 > ##### options:
-> `--help` Show this message and exit.
+> `--help` Show this message and exit.  
 
 ---
 
