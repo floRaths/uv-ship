@@ -36,7 +36,7 @@ def read_changelog(config: dict, clog_path: str | Path = None, tag_format: str =
     p = Path(clog_path) if isinstance(clog_path, str) else clog_path
 
     if not p.exists():
-        first_section = prepare_new_section('latest', add_date=True)
+        first_section = '## beginning of changelog'  # prepare_new_section('latest', add_date=True)
         p.write_text(f'# Changelog\n\n{first_section}', encoding='utf-8')
 
     return p.read_text(encoding='utf-8'), clog_path

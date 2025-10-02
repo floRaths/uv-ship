@@ -26,7 +26,9 @@ def commit_files(config, MESSAGE):
     msg.imsg('committing file changes', icon=sym.item)
 
     if not config['dry_run']:
-        _, success = run_command(['git', 'add', 'pyproject.toml', 'uv.lock', 'CHANGELOG'], cwd=config['repo_root'])
+        _, success = run_command(
+            ['git', 'add', 'pyproject.toml', 'uv.lock', config['changelog_path']], cwd=config['repo_root']
+        )
         msg.failure('failed to add files to git') if not success else None
 
         _, success = run_command(['git', 'commit', '-m', MESSAGE], cwd=config['repo_root'])

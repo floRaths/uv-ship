@@ -43,7 +43,7 @@ to remove pre-release status, pass `stable` as release version
 ---
 
 ### `uv-ship version`
-Prepares and ships the provided version. This path allows you to break out of semantiv versioning conventions if desired.
+Prepares and ships the provided version. This path allows you to break out of semantic versioning conventions if desired.
 
 <span class="acc-2-text">**usage:**</span> `uv-ship version [options] {VERSION}`
 
