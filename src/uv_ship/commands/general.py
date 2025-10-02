@@ -34,15 +34,13 @@ def calculate_version(bump_type: str, pre_release: str = None):
     return res.stdout.strip().split(' ')[-1]
 
 
-def tag_and_message(tag_prefix: str, new_version: str, current_version: str = None):
-    TAG = f'{tag_prefix}{new_version}'
+def tag(config: dict, new_ver: str):
+    tag_prefix = config['tag_prefix']
+    return f'{tag_prefix}{new_ver}'
 
-    if current_version:
-        MESSAGE = f'new version: {current_version} → {new_version}'
-    else:
-        MESSAGE = f'new version: {new_version}'
 
-    return TAG, MESSAGE
+def commit_message(config: dict, old_ver: str, new_ver: str):
+    return config['commit_message'].format(old_ver=old_ver, new_ver=new_ver)
 
 
 def update_files(config, package_name, version):

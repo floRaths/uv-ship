@@ -12,7 +12,8 @@ def ship(config: dict, version: str, allow_dirty: bool = None, **kwargs):
     print(f'{package_name} {ac.BOLD}{ac.RED}{old_version}{ac.RESET} → {ac.BOLD}{ac.GREEN}{new_version}{ac.RESET}\n')
 
     # Construct tag and message
-    TAG, MESSAGE = cmd.gen.tag_and_message(config['tag_prefix'], current_version=old_version, new_version=new_version)
+    TAG = cmd.gen.tag(config, new_version)
+    MESSAGE = cmd.gen.commit_message(config, old_version, new_version)
 
     config['allow_dirty'] = allow_dirty if allow_dirty is not None else config['allow_dirty']
 
