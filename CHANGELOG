@@ -1,5 +1,10 @@
 # Changelog
 
+## `v0.5.0` — [2025-10-01]
+
+- feat: commit-message template
+- docs: revamped config and reference sections
+
 ## `v0.4.2` — [2025-10-01]
 
 - fix: version check crashes when tool not available
