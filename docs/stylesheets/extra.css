@@ -90,6 +90,17 @@
   --neutral-val:      60%;
 }
 
+.acc-1-text {
+  color: var(--acc_1);
+}
+
+.acc-2-text {
+  color: var(--acc_2);
+}
+
+.acc-2-code code {
+  color: var(--acc_2);
+}
 
 /* ——— COLOR SETTINGS BEYOND STANDARD VARIABLES ——— */
 

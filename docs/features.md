@@ -5,12 +5,16 @@ toc_depth: 3
 # CLI reference
 
 ### `uv-ship`
-usage: `uv-ship [option] command [args]`
 
-#### options:
-  `--config` Path to config file (inferred if not provided).
-  `--dry-run` Show what would be done without making any changes.
-  `--help` Show a help message and exit.
+The main entrypoint to access uv-ship features
+
+<span class="acc-2-text">**usage:**</span> `uv-ship [options] command [args]`
+
+> ##### options:
+> `--config` Path to config file (inferred if not provided).
+> `--dry-run` Show what would be done without making any changes.
+> `--self` Display uv-ship version.
+> `--help` Show a help message and exit.
 
 ---
 
@@ -18,49 +22,60 @@ usage: `uv-ship [option] command [args]`
 ## commands
 ### `uv-ship next`
 
-calculates the next semantic version (`major`, `minor`, or `patch`), runs the preflight checks, offers to refresh the changelog, updates version metadata, and executes the commit/tag/push sequence unless running as a dry run.
+Calculates the next semantic version (`major`, `minor`, or `patch`), runs the preflight checks, offers to refresh the changelog, updates version metadata, and executes the commit/tag/push sequence unless running as a dry run.
 
-usage: `uv-ship next [release_version] {major|minor|patch|stable}`
+<span class="acc-2-text">**usage:**</span> `uv-ship next [options] RELEASE_TYPE`
 
 possible values:
-- `major`, `minor`, `patch`, `stable`
+`major`, `minor`, `patch`, `stable`
 
 can be paired with pre-release components:
-- `alpha`, `beta`, `rc`, `post`, `dev`
+`alpha`, `beta`, `rc`, `post`, `dev`
 
 to remove pre-release status, pass `stable` as release version
 
-#### options:
-  `--pre-release` Pre-release component (e.g. alpha, beta).
-  `--dirty` Allow dirty working directory.
-  `--help` Show this message and exit.
+
+> ##### options:
+> `--pre-release` Pre-release component (e.g. alpha, beta).
+> `--dirty` Allow dirty working directory.
+> `--help` Show this message and exit.
 
 ---
 
 ### `uv-ship version`
-sets `pyproject.toml`/`uv.lock` to the provided version. This path is handy when you have already prepared the release commit and only need the metadata updates.
+Prepares and ships the provided version. This path allows you to break out of semantiv versioning conventions if desired.
 
-usage: `uv-ship version [options] {VERSION}`
+<span class="acc-2-text">**usage:**</span> `uv-ship version [options] {VERSION}`
 
-#### options:
-  `--dirty` Allow dirty working directory.
-  `--help` Show this message and exit.
+> ##### options:
+> `--dirty` Allow dirty working directory.
+> `--help` Show this message and exit.
 
 ---
 
 ### `uv-ship log`
 Builds a changelog section from commits since the latest Git tag. Use `--latest` to preview without writing, or `--save` to persist the top section of your configured changelog file.
 
-usage: `uv-ship log [options]`
+<span class="acc-2-text">**usage:**</span> `uv-ship log [options]`
 
-#### options:
-  `--latest` Show all commits since the last tag.
-  `--save` Save changes to the changelog.
-  `--help` Show this message and exit.
+> ##### options:
+> `--latest` Show all commits since the last tag.
+> `--save` Save changes to the changelog.
+> `--help` Show this message and exit.
 
 ---
 
-## Working with changelogs
+### `uv-ship status`
+Display a status report for the current package.
+
+<span class="acc-2-text">**usage:**</span> `uv-ship status`
+
+> ##### options:
+> `--help` Show this message and exit.
+
+---
+
+## working with changelogs
 - The reader targets the configured `changelog-path` (default: `CHANGELOG`); ensure the file exists.
 - Generated sections take the form `## vX.Y.Z — [YYYY-MM-DD]`, with bullet formatting normalised for Markdown.
 - When refreshing, the tool compares the newest Git tag against the latest changelog heading:

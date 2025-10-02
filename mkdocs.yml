@@ -32,7 +32,7 @@ theme:
       danger: octicons/zap-16
       bug: octicons/bug-16
       example: octicons/beaker-16
-      quote: octicons/quote-16
+      quote: fontawesome/regular/lightbulb
       # tip: octicons/squirrel-16
 
   features:
@@ -79,6 +79,10 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - admonition
+
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
 
   - pymdownx.blocks.caption
   - pymdownx.superfences
