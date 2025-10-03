@@ -1,5 +1,9 @@
 # Changelog
 
+## `v0.5.3` — [2025-10-03]
+
+- fix: not reporting non-required gh tool in status
+
 ## `v0.5.2` — [2025-10-02]
 
 - fix: issue#4 - missing changelog can not be committed
