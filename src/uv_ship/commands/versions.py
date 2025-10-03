@@ -59,7 +59,7 @@ def get_tool_versions(print_status=False):
             if print_status:
                 msg.warning(f'{k} is not installed or not available on PATH.')
             results[k] = 'not installed'
-        elif _ and param['required']:
+        elif _:
             if print_status:
                 msg.success(f'{k} is installed and available on PATH.')
             results[k] = version
