@@ -1,5 +1,9 @@
 # Changelog
 
+## `v0.5.4` — [2025-10-03]
+
+- ux: improved workflow messages
+
 ## `v0.5.3` — [2025-10-03]
 
 - fix: not reporting non-required gh tool in status
