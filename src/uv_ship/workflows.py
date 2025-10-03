@@ -23,9 +23,12 @@ def ship(config: dict, version: str, allow_dirty: bool = None, **kwargs):
     confirm = input(f'{ac.BLUE}auto update changelog?{ac.RESET} [y/N]: ').strip().lower()
     if confirm in ('y', 'yes'):
         save = not config['dry_run']
-        cmd_log(config=config, new_tag=TAG, save=save, show_result=1)
         print('')
-        msg.imsg('please consider making manual edits NOW!', icon=sym.item, color=ac.YELLOW)
+        msg.imsg(f'    {"-" * 56}', icon=None, color=ac.YELLOW)
+        cmd_log(config=config, new_tag=TAG, save=save, print_n_sections=3)
+
+        msg.imsg('    please consider making manual edits NOW!', icon=None, color=ac.YELLOW)
+        msg.imsg(f'    {"-" * 56}', icon=None, color=ac.YELLOW)
     else:
         msg.imsg('changelog update skipped by user.', icon=sym.item)
 
@@ -63,7 +66,7 @@ def cmd_log(config: dict, new_tag: str, latest: bool = False, save: bool = False
 
     else:
         save = save if not config['dry_run'] else False
-        cl.execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, save)
+        cl.execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, save, **kwargs)
 
 
 def cmd_status(config: dict):

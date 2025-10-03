@@ -35,13 +35,13 @@ def welcome_message():
 
 
 def preflight_complete():
-    print('')
-    imsg('have you updated the documentation?', icon=None, color=ac.BLUE)
+    # print('')
+    # imsg('have you updated the documentation?', icon=None, color=ac.BLUE)
 
     # all preflight checks passed
     print('')
-    imsg(f'{"-" * 62}', icon=None)
-    imsg('If everything looks good, you can proceed with the release.', icon=None)
+    # imsg(f'{"-" * 62}', icon=None)
+    imsg('If everything looks good, you can proceed with the release!', icon=None, color=ac.BOLD)
     # msg.imsg('ready to ship!', icon=sym.positive)
 
     step_by_step_operations()
@@ -59,6 +59,6 @@ def step_by_step_operations():
 
 
 def user_confirmation():
-    confirm = input('do you want to proceed? [y/N]: ').strip().lower()
+    confirm = input(f'{ac.BLUE}do you want to proceed?{ac.RESET} [y/N]: ').strip().lower()
     if confirm not in ('y', 'yes'):
         abort_by_user()

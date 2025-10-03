@@ -1,4 +1,5 @@
 import re
+import textwrap
 from datetime import date
 from pathlib import Path
 
@@ -103,6 +104,10 @@ def prepare_new_section(new_tag: str, add_date: bool = True, level: int = H_LVL)
 
 
 def show_changelog(content: str, clog_file: str, print_n_sections: int | None, level: int = H_LVL):
+    def indent_text(text: str, indent: int = 4) -> str:
+        pad = ' ' * indent
+        return '\n'.join(pad + line if line.strip() else line for line in text.splitlines())
+
     if print_n_sections is not None:
         # split on section headers of the same level
         section_re = re.compile(rf'^(#{{{level}}}\s+.*$)', re.M)
@@ -117,9 +122,12 @@ def show_changelog(content: str, clog_file: str, print_n_sections: int | None, l
             rendered.append(parts[i + 1])  # body
             if len(rendered) // 2 >= print_n_sections:
                 break
-        print(''.join(rendered).strip())
+
+        final_text = ''.join(rendered).strip()
+        print(textwrap.indent(final_text, prefix='    '))
     else:
-        print(content)
+        print(textwrap.indent(content, prefix='    '))
+        # print(content)
 
 
 def _insert_content(content: str, new_section: str, span: tuple[int, int]) -> str:
@@ -201,7 +209,7 @@ def eval_clog_update_strategy(clog_content: str, new_tag: str, print_eval: bool 
     return strategy, latest_repo_tag, latest_clog_tag
 
 
-def execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, save):
+def execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, save, **kwargs):
     new_section = prepare_new_section(new_tag, add_date=True)
 
     if strategy == 'prompt':
@@ -231,7 +239,7 @@ def execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, 
     else:
         msg.failure(f'unknown changelog update strategy: {strategy}')
 
-    show_changelog(content=clog_updated, clog_file=config['changelog_path'], print_n_sections=3)
+    show_changelog(content=clog_updated, clog_file=config['changelog_path'], **kwargs)
     print('')
 
     if save:
