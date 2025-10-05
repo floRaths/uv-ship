@@ -1,4 +1,6 @@
-# configuration
+<br>
+
+# Configuration
 
 uv-ship reads user defined settings from a `[tool.uv-ship]` table in a toml file. By default, it will look for such a table in either `uv-ship.toml` or `pyproject.toml` in your project root. Optionally, you can use the `--config` flag to point to a custom file.
 
@@ -13,7 +15,7 @@ uv-ship reads user defined settings from a `[tool.uv-ship]` table in a toml file
 
 :material-arrow-right-thin: If no config is provided, uv-ship will fall back to its [default settings](#available-settings).
 
-## example configuration
+## Example Configuration
 ```toml
 # pyproject.toml
 [tool.uv-ship]
@@ -28,7 +30,7 @@ changelog-path = "CHANGELOG"
 
 <br>
 
-## available settings
+## Available Settings
 
 ---
 

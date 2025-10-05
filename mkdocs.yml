@@ -132,6 +132,7 @@ extra_css:
 nav:
   - intro: index.md
   - workflow: workflow.md
-  - reference: features.md
+  - install: installation.md
   - config: config.md
+  - reference: features.md
   - release notes: changelog.md
