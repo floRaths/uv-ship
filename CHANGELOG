@@ -1,5 +1,12 @@
 # Changelog
 
+## `v0.5.5` — [2025-10-05]
+
+- fix: changelogger issue with print_sections
+- docs: updated installation
+- pkg: pin python version
+- pkg: update gitignore
+
 ## `v0.5.4` — [2025-10-03]
 
 - ux: improved workflow messages
