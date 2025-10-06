@@ -103,7 +103,7 @@ def prepare_new_section(new_tag: str, add_date: bool = True, level: int = H_LVL)
     return new_section
 
 
-def show_changelog(content: str, clog_file: str, print_n_sections: int | None, level: int = H_LVL):
+def show_changelog(content: str, clog_file: str, print_n_sections: int = None, level: int = H_LVL):
     def indent_text(text: str, indent: int = 4) -> str:
         pad = ' ' * indent
         return '\n'.join(pad + line if line.strip() else line for line in text.splitlines())

@@ -99,7 +99,7 @@ def log(ctx, tag, latest, save):
     """
     build/show the changelog.
     """
-    wfl.cmd_log(config=ctx.obj, new_tag=tag, latest=latest, save=save)
+    wfl.cmd_log(config=ctx.obj, new_tag=tag, latest=latest, save=save, print_n_sections=3)
 
 
 # region log
