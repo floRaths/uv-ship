@@ -23,12 +23,12 @@
 ---
 ## Quick Start
 
-1. [Install](installation.md) as a standalong CLI tool (recommended):
+1. [Install](installation.md) as a standalone CLI tool (recommended):
 ``` console
 $ uv tool install uv-ship
 ```
 
-2. Set up basic [configurations](config.md) by placing a `[tool.uv-ship]` table in your `pyrproject.toml`.
+2. Set up basic [configurations](config.md) by placing a `[tool.uv-ship]` table in your `pyproject.toml`.
 
 3. Run `uv-ship --dry-run next minor`
 

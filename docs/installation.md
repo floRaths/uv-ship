@@ -3,30 +3,34 @@
 # Installation
 
 ## Requirements
-- a project running Python 3.9+
+
+uv-ship is a CLI tool that aims to add repository interfacing functionality to uv. The minimum requirements are therefore:
+
 - [uv 0.7.0](https://docs.astral.sh/uv/) or later on your `PATH`
+- a python project that is managed with uv
 - a Git repository
 
 ---
+## Standalone CLI installation
 
-install it as a standalone CLI tool into a dedicated environment:
+It is recommended to install uv-ship as a standalone [uv tool](https://docs.astral.sh/uv/guides/tools/), where it can run in a dedicated environment:
 
 ```console
-uv tool install uv-ship
+$ uv tool install uv-ship
 ```
 
-or add `uv-ship` as a dependency to a uv mangaged project:
-
+You can update to the latest version via:
 ```console
-uv add uv-ship
+$ uv tool update uv-ship
 ```
 
----
 
-# Update
+## Usage as a project dependency
+
+Alternatively you can add uv-ship as a dependency to your project as long at it runs python 3.10+. 
 
 ```console
-uv tool update uv-ship
+$ uv add uv-ship
 ```
 
 ---
