@@ -5,5 +5,7 @@ allow-dirty = false
 changelog-path = "CHANGELOG"
 dry-run = false
 commit-message = "new version {old_ver} → {new_ver}"
+# changelog-template = "- {message} [{commit_ref}]"
+repo-url = ""
 preflight-prompt = true
 reminders = ['CHANGELOG.md updated?', 'documentation updated?']
