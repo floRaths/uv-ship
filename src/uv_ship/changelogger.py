@@ -12,22 +12,91 @@ H_LVL = 2
 tag_format = '`'
 
 
+def get_repo_url(config: dict) -> str | None:
+    """Get repository URL from config or git remote."""
+    # Use config override if provided
+    if config.get('repo_url'):
+        return config['repo_url']
+
+    # Try to get from git remote
+    result, success = cmd.run_command(['git', 'remote', 'get-url', 'origin'], print_stderr=False)
+    if not success:
+        return None
+
+    remote_url = result.stdout.strip()
+
+    # Parse different URL formats to get base commit URL
+    # SSH format: git@github.com:user/repo.git
+    if remote_url.startswith('git@'):
+        match = re.match(r'git@([^:]+):(.+?)(?:\.git)?$', remote_url)
+        if match:
+            host, path = match.groups()
+            return f'https://{host}/{path}/commit'
+
+    # HTTPS format: https://github.com/user/repo.git
+    elif remote_url.startswith('http'):
+        # Remove .git suffix if present
+        base_url = remote_url.removesuffix('.git')
+        return f'{base_url}/commit'
+
+    return None
+
+
 def get_commits():
+    """Get commits with hash and message since last tag."""
     _, has_commits = cmd.run_command(['git', 'rev-parse', '--quiet', '--verify', 'HEAD'], print_stderr=False)
     if not has_commits:
-        return 'there are no commits in the repository yet...'
+        return []
 
     tag_res, has_tag = cmd.run_command(['git', 'describe', '--tags', '--abbrev=0'], print_stderr=False)
     base = tag_res.stdout.strip() if has_tag else None
 
-    # if there is no tag, show all commits
+    # Format: hash|subject
     if base:
-        log_args = ['git', 'log', f'{base}..HEAD', '--pretty=format:- %s']
+        log_args = ['git', 'log', f'{base}..HEAD', '--pretty=format:%h|%s']
     else:
-        log_args = ['git', 'log', '--pretty=format:- %s']
+        log_args = ['git', 'log', '--pretty=format:%h|%s']
 
     result, _ = cmd.run_command(log_args, print_stdout=False)
-    return result.stdout
+
+    commits = []
+    for line in result.stdout.strip().split('\n'):
+        if '|' in line:
+            hash_short, message = line.split('|', 1)
+            commits.append({'hash': hash_short, 'message': message})
+
+    return commits
+
+
+def format_commits(commits: list[dict], config: dict) -> str:
+    """Format commits using the changelog template."""
+    if not commits:
+        return '- (no changes since last tag)'
+
+    template = config.get('changelog_template', '- {message}')
+
+    # Only get repo URL if template uses commit_ref
+    repo_url = None
+    if '{commit_ref}' in template:
+        repo_url = get_repo_url(config)
+
+    formatted_lines = []
+    for commit in commits:
+        # Create commit reference (markdown link if repo URL available)
+        if repo_url:
+            commit_ref = f'[{commit["hash"]}]({repo_url}/{commit["hash"]})'
+        else:
+            commit_ref = commit['hash']
+
+        # Replace template variables
+        line = template.format(
+            message=commit['message'],
+            commit_ref=commit_ref,
+            hash=commit['hash']
+        )
+        formatted_lines.append(line)
+
+    return '\n'.join(formatted_lines)
 
 
 def read_changelog(config: dict, clog_path: str | Path = None, tag_format: str = tag_format) -> str:
@@ -91,14 +160,12 @@ def prepare_header(tag: str, add_date: bool = True, level: int = H_LVL) -> str:
     return header_line
 
 
-def prepare_new_section(new_tag: str, add_date: bool = True, level: int = H_LVL) -> str:
+def prepare_new_section(new_tag: str, config: dict, add_date: bool = True, level: int = H_LVL) -> str:
     header_line = prepare_header(new_tag, add_date=add_date, level=level)
 
     commits = get_commits()
-    if len(commits) == 0:
-        commits = '- (no changes since last tag)'
+    body = format_commits(commits, config)
 
-    body = _normalize_bullets(commits)
     new_section = f'{header_line}\n\n{body}\n'
     return new_section
 
@@ -210,7 +277,7 @@ def eval_clog_update_strategy(clog_content: str, new_tag: str, print_eval: bool 
 
 
 def execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, save, **kwargs):
-    new_section = prepare_new_section(new_tag, add_date=True)
+    new_section = prepare_new_section(new_tag, config, add_date=True)
 
     if strategy == 'prompt':
         print('It looks like the changelog was already updated since the last release (`latest` is present).')

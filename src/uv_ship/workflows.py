@@ -58,7 +58,7 @@ def cmd_log(config: dict, new_tag: str, latest: bool = False, save: bool = False
     if latest:
         print('')
         msg.imsg(f'commits since last tag in repo: {latest_repo_tag}:\n', color=msg.ac.BOLD)
-        new_section = cl.prepare_new_section(new_tag, add_date=True)
+        new_section = cl.prepare_new_section(new_tag, config, add_date=True)
         print(new_section.strip())
 
         print('')
