@@ -1,5 +1,14 @@
 # Changelog
 
+## `v0.6.0` — [2025-10-08]
+
+> co-authored by: [gokhanmeteerturk](https://github.com/gokhanmeteerturk)
+
+- feat: add changelog item template with optional commit references [[fc15970](https://github.com/floRaths/uv-ship/commit/fc15970)]
+- fix: allow more option for changelog template. [[3c9a931](https://github.com/floRaths/uv-ship/commit/3c9a931)]
+- pkg: added repo_url to uv-ship status [[55de06d](https://github.com/floRaths/uv-ship/commit/55de06d)]
+- docs: added changelog template to docs/config [[373e806](https://github.com/floRaths/uv-ship/commit/373e806)]
+
 ## `v0.5.5` — [2025-10-05]
 
 - fix: changelogger issue with print_sections
