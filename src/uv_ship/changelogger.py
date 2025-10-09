@@ -31,13 +31,14 @@ def get_repo_url(config: dict) -> str | None:
         match = re.match(r'git@([^:]+):(.+?)(?:\.git)?$', remote_url)
         if match:
             host, path = match.groups()
-            return f'https://{host}/{path}/commit'
+            return f'https://{host}/{path}'
 
     # HTTPS format: https://github.com/user/repo.git
     elif remote_url.startswith('http'):
         # Remove .git suffix if present
         base_url = remote_url.removesuffix('.git')
-        return f'{base_url}/commit'
+        # return f'{base_url}/commit'
+        return base_url
 
     return None
 
@@ -75,24 +76,30 @@ def format_commits(commits: list[dict], config: dict) -> str:
 
     template = config.get('changelog_template', '- {message}')
 
-    # Only get repo URL if template uses commit_ref
+    # Only get repo URL if template needs it
     repo_url = None
-    if '{commit_ref}' in template:
+    if any(token in template for token in ('{commit_ref}', '{repo_url}')):
         repo_url = get_repo_url(config)
+        if repo_url is None:
+            msg.warning('Could not determine repository URL for changelog entries. Falling back to commit hashes.')
 
     formatted_lines = []
     for commit in commits:
+        commit_hash = commit['hash']
+
         # Create commit reference (markdown link if repo URL available)
         if repo_url:
-            commit_ref = f'[{commit["hash"]}]({repo_url}/{commit["hash"]})'
+            commit_ref = f'[{commit_hash}]({repo_url}/commit/{commit_hash})'
         else:
-            commit_ref = commit['hash']
+            commit_ref = commit_hash
 
         # Replace template variables
         line = template.format(
             message=commit['message'],
             commit_ref=commit_ref,
-            hash=commit['hash']
+            hash=commit_hash,
+            commit_hash=commit_hash,
+            repo_url=repo_url or commit_hash,
         )
         formatted_lines.append(line)
 
@@ -122,17 +129,17 @@ def _header_re(tag: str, level: int = H_LVL) -> re.Pattern:
     )
 
 
-def _normalize_bullets(text: str) -> str:
-    # Ensure each non-empty line starts with "- " and trim spaces
-    lines = []
-    for raw in text.splitlines():
-        s = raw.strip()
-        if not s:
-            continue
-        if not s.startswith('- '):
-            s = '- ' + s.lstrip('-•* ').strip()
-        lines.append(s)
-    return '\n'.join(lines) + '\n'
+# def _normalize_bullets(text: str) -> str:
+#     # Ensure each non-empty line starts with "- " and trim spaces
+#     lines = []
+#     for raw in text.splitlines():
+#         s = raw.strip()
+#         if not s:
+#             continue
+#         if not s.startswith('- '):
+#             s = '- ' + s.lstrip('-•* ').strip()
+#         lines.append(s)
+#     return '\n'.join(lines) + '\n'
 
 
 def find_section_spans(content: str, tag: str, level: int = H_LVL):
@@ -166,15 +173,11 @@ def prepare_new_section(new_tag: str, config: dict, add_date: bool = True, level
     commits = get_commits()
     body = format_commits(commits, config)
 
-    new_section = f'{header_line}\n\n{body}\n'
+    new_section = f'{header_line}\n\n{body}\n\n'
     return new_section
 
 
 def show_changelog(content: str, clog_file: str, print_n_sections: int = None, level: int = H_LVL):
-    def indent_text(text: str, indent: int = 4) -> str:
-        pad = ' ' * indent
-        return '\n'.join(pad + line if line.strip() else line for line in text.splitlines())
-
     if print_n_sections is not None:
         # split on section headers of the same level
         section_re = re.compile(rf'^(#{{{level}}}\s+.*$)', re.M)
