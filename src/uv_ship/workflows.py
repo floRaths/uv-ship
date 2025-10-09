@@ -74,13 +74,17 @@ def cmd_status(config: dict):
     latest_clog_tag = cl.get_latest_clog_tag(clog_content=clog_content)
     latest_repo_tag = cmd.git.get_latest_tag()
     repo_root = cmd.git.get_repo_root()
+    repo_url = cl.get_repo_url(config)
     project_name, current_version = cmd.gen.get_version_str(return_project_name=True)
 
     tool_versions = cmd.ver.get_tool_versions()
 
     def print_k_v(item, value):
+        value = '<undefined>' if not value else value
+        color = f'{msg.ac.RED}{msg.ac.BOLD}' if value == '<undefined>' else msg.ac.BOLD
         msg.imsg(f'{item:16}', color=msg.ac.BLUE, end='')
-        msg.imsg(f'- {value}', color=msg.ac.BOLD)
+        msg.imsg('-', color=msg.ac.DIM, end=' ')
+        msg.imsg(f'{value}', color=color)
 
     print('\nInstalled tool versions:')
     for k, v in tool_versions.items():
@@ -89,6 +93,7 @@ def cmd_status(config: dict):
 
     print('')
     print_k_v('project', f'{project_name} v{current_version}')
+    print_k_v('repo_url', repo_url)
     print_k_v('repo_root', repo_root)
     print_k_v('latest repo tag', latest_repo_tag)
     print_k_v('latest clog tag', latest_clog_tag)
