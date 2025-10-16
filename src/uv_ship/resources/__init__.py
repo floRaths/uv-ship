@@ -3,19 +3,20 @@ import json
 
 from .rich_click_theme import rich_click as rich_click
 
+symbols = {}
+ansi_codes = {}
+tagline = ''
+
 path = resources.files('uv_ship.resources')
 for cont in path.iterdir():
     if cont.name == 'symbols.json':
-        with open(cont, 'r') as f:
-            symbols = json.load(f)
+        symbols = json.loads(cont.read_text(encoding='utf-8'))
 
     if cont.name == 'ansi.json':
-        with open(cont, 'r') as f:
-            ansi_codes = json.load(f)
+        ansi_codes = json.loads(cont.read_text(encoding='utf-8'))
 
     if cont.name == 'tagline.md':
-        with open(cont, 'r') as f:
-            tagline = cont.read_text(encoding='utf-8')
+        tagline = cont.read_text(encoding='utf-8')
 
 
 class Symbols:
