@@ -1,5 +1,11 @@
 # Changelog
 
+## `v0.6.1` — [2025-10-20]
+
+> co-authored by: [wvanhed](https://github.com/wvanhed)
+
+- fix: resolve UnicodeDecodeError on Windows [[7c4700e](https://github.com/floRaths/uv-ship/commit/7c4700e)]
+
 ## `v0.6.0` — [2025-10-08]
 
 > co-authored by: [gokhanmeteerturk](https://github.com/gokhanmeteerturk)
