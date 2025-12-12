@@ -204,16 +204,23 @@ def find_section_spans(content: str, tag: str, level: int = H_LVL):
     return spans
 
 
-def prepare_header(tag: str, add_date: bool = True, level: int = H_LVL) -> str:
-    today = date.today().isoformat() if add_date else None
-    header_line = f'{"#" * level} {tag_format}{tag}{tag_format}'
-    if today:
-        header_line += f' — [{today}]'
+def prepare_header(tag: str, add_date: bool = True, date_first: bool = False, level: int = H_LVL) -> str:
+    header_start = f'{"#" * level}'
+    header_tag = f'{tag_format}{tag}{tag_format}'
+
+    if add_date:
+        today = date.today().isoformat()
+        if date_first:
+            header_line = f'{header_start} [{today}] — {header_tag}'
+        else:
+            header_line = f'{header_start} {header_tag} — [{today}]'
+    else:
+        header_line = f'{header_start} {header_tag}'
     return header_line
 
 
 def prepare_new_section(new_tag: str, config: dict, add_date: bool = True, level: int = H_LVL) -> str:
-    header_line = prepare_header(new_tag, add_date=add_date, level=level)
+    header_line = prepare_header(new_tag, add_date=add_date, date_first=config.get('date_first', False), level=level)
 
     commits = get_commits()
     body = format_commits(commits, config)

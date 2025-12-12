@@ -8,3 +8,4 @@ repo-url = ""
 changelog-path = "CHANGELOG"
 changelog-template = "- {message} [{commit_ref}]"
 unreleased-tag = "[unreleased]"
+date-first = false
