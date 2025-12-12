@@ -1,5 +1,9 @@
 # Changelog
 
+## `v0.8.0` — [2025-12-11]
+
+- feat: date-first (#10) [[3077d80](https://github.com/floRaths/uv-ship/commit/3077d80)]
+
 ## `v0.7.0` — [2025-10-21]
 
 - pkg: added pytest [[444b564](https://github.com/floRaths/uv-ship/commit/444b564)]
