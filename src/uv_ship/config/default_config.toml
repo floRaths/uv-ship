@@ -2,10 +2,9 @@
 release-branch = "main"
 tag-prefix = "v"
 allow-dirty = false
-changelog-path = "CHANGELOG"
 dry-run = false
 commit-message = "new version {old_ver} → {new_ver}"
-changelog-template = "- {message} [{commit_ref}]"
 repo-url = ""
-# preflight-prompt = true
-# reminders = ['CHANGELOG.md updated?', 'documentation updated?']
+changelog-path = "CHANGELOG"
+changelog-template = "- {message} [{commit_ref}]"
+unreleased-tag = "[unreleased]"

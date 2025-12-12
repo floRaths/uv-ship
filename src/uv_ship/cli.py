@@ -91,7 +91,13 @@ def cli_version(ctx, version, dirty):
 
 # region log
 @cli.command(name='log')
-@click.option('--tag', type=str, default='latest', help='Tag to use in the changelog.')
+@click.option(
+    '--tag',
+    type=str,
+    default=None,
+    show_default=False,
+    help='Tag to use in the changelog (default set in config).',
+)
 @click.option('--latest', is_flag=True, help='Show all commits since the last tag.')
 @click.option('--save', is_flag=True, default=None, help='Save changes to the changelog.')
 @click.pass_context
@@ -99,7 +105,10 @@ def log(ctx, tag, latest, save):
     """
     build/show the changelog.
     """
-    wfl.cmd_log(config=ctx.obj, new_tag=tag, latest=latest, save=save, print_n_sections=3)
+    default_tag = ctx.obj.get('unreleased_tag', '[unreleased]')
+    new_tag = tag or default_tag
+
+    wfl.cmd_log(config=ctx.obj, new_tag=new_tag, latest=latest, save=save, print_n_sections=3)
 
 
 # region log

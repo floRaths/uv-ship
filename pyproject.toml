@@ -1,12 +1,12 @@
 [project]
 name = "uv-ship"
-version = "0.6.0"
+version = "0.7.0"
 description = "a release workflow streamliner for uv managed python projects"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 dependencies = [
-    "tomli ~= 2.2",
+    "tomli >= 2.2; python_version < '3.11'",
     "rich-click>=1.9.1",
 ]
 
@@ -14,7 +14,7 @@ dependencies = [
 dev = [
     "ipykernel >= 6.30.1",
     "ipywidgets >= 8.1.7",
-    "pre-commit >= 4.3.0",
+    "pytest>=8.4.2",
     "ruff == 0.13.1",
 ]
 docs = ["mkdocs ~= 1.6", "mkdocs-material ~= 9.6"]

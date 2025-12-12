@@ -77,6 +77,12 @@ If uv-ship cannot resolve the repo_url it will fall back to commit hash instead.
 The default produces following format:
 > - feat: add changelog template [[c505b40](https://github.com/floRaths/uv-ship/commit/c505b40)]
 
+### `unreleased-tag`
+_string_  : <span class="acc-2-code">`"[unreleased]"`</span>
+
+The default tag used by `uv-ship log` for all commits since the latest tag.
+
+
 ### `repo-url`
 _string_  : <span class="acc-2-code">`""`</span>
 

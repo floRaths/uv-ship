@@ -2,6 +2,7 @@ import re
 import textwrap
 from datetime import date
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
 from . import commands as cmd
 from . import messages as msg
@@ -10,13 +11,59 @@ HEADER_ANY = re.compile(r'^#{1,6}\s+.*$', re.M)
 H_LVL = 2
 
 tag_format = '`'
+DEFAULT_UNRELEASED_TAG = '[unreleased]'
+
+
+def normalize_repo_url(url: str) -> str:
+    """Normalize repository URLs by stripping credentials and trailing .git."""
+    if not url:
+        return url
+
+    try:
+        parsed = urlsplit(url)
+    except ValueError:
+        # If urlsplit can't parse it, fall back to the original string.
+        return url
+
+    if parsed.scheme not in ('http', 'https'):
+        return url
+
+    hostname = parsed.hostname or ''
+    if not hostname:
+        return url
+
+    netloc = hostname
+    if parsed.port:
+        netloc = f'{netloc}:{parsed.port}'
+
+    path = parsed.path.removesuffix('.git')
+
+    normalized = urlunsplit((parsed.scheme, netloc, path, parsed.query, parsed.fragment))
+    return normalized.rstrip('/')
+
+
+def commit_url_base(repo_url: str) -> str:
+    """Return base repository URL suitable for building commit links."""
+    if not repo_url:
+        return repo_url
+
+    base = repo_url.rstrip('/')
+    if base.endswith('/commit'):
+        base = base[: -len('/commit')]
+    return base
+
+
+def get_config_latest_tag(config: dict) -> str:
+    """Return the placeholder tag used for unreleased changes."""
+    configured = config.get('unreleased_tag', DEFAULT_UNRELEASED_TAG)
+    return configured or DEFAULT_UNRELEASED_TAG
 
 
 def get_repo_url(config: dict) -> str | None:
     """Get repository URL from config or git remote."""
     # Use config override if provided
     if config.get('repo_url'):
-        return config['repo_url']
+        return normalize_repo_url(config['repo_url'])
 
     # Try to get from git remote
     result, success = cmd.run_command(['git', 'remote', 'get-url', 'origin'], print_stderr=False)
@@ -31,14 +78,11 @@ def get_repo_url(config: dict) -> str | None:
         match = re.match(r'git@([^:]+):(.+?)(?:\.git)?$', remote_url)
         if match:
             host, path = match.groups()
-            return f'https://{host}/{path}'
+            return normalize_repo_url(f'https://{host}/{path}')
 
     # HTTPS format: https://github.com/user/repo.git
-    elif remote_url.startswith('http'):
-        # Remove .git suffix if present
-        base_url = remote_url.removesuffix('.git')
-        # return f'{base_url}/commit'
-        return base_url
+    elif remote_url.lower().startswith('http'):
+        return normalize_repo_url(remote_url)
 
     return None
 
@@ -89,7 +133,8 @@ def format_commits(commits: list[dict], config: dict) -> str:
 
         # Create commit reference (markdown link if repo URL available)
         if repo_url:
-            commit_ref = f'[{commit_hash}]({repo_url}/commit/{commit_hash})'
+            base_url = commit_url_base(repo_url)
+            commit_ref = f'[{commit_hash}]({base_url}/commit/{commit_hash})'
         else:
             commit_ref = commit_hash
 
@@ -177,13 +222,19 @@ def prepare_new_section(new_tag: str, config: dict, add_date: bool = True, level
     return new_section
 
 
-def show_changelog(content: str, clog_file: str, print_n_sections: int = None, level: int = H_LVL):
+def show_changelog(
+    content: str,
+    clog_file: str,
+    print_n_sections: int = None,
+    level: int = H_LVL,
+    latest_placeholder: str = DEFAULT_UNRELEASED_TAG,
+):
     if print_n_sections is not None:
         # split on section headers of the same level
         section_re = re.compile(rf'^(#{{{level}}}\s+.*$)', re.M)
         parts = section_re.split(content)
 
-        report_n = print_n_sections if print_n_sections != 1 else 'latest'
+        report_n = print_n_sections if print_n_sections != 1 else latest_placeholder
         first_line = f'\n{msg.ac.BOLD}Updated {clog_file}{msg.ac.RESET} (showing {report_n} sections)\n\n'
 
         rendered = [first_line]
@@ -252,9 +303,10 @@ def strategy_replace(clog_content: str, new_section: str, latest_clog_tag: str):
     return clog_updated
 
 
-def eval_clog_update_strategy(clog_content: str, new_tag: str, print_eval: bool = False):
+def eval_clog_update_strategy(config: dict, clog_content: str, new_tag: str, print_eval: bool = False):
     latest_repo_tag = cmd.git.get_latest_tag()
     latest_clog_tag = get_latest_clog_tag(clog_content)
+    latest_placeholder = get_config_latest_tag(config)
 
     strategy = 'unknown'
     if not latest_repo_tag:
@@ -265,7 +317,7 @@ def eval_clog_update_strategy(clog_content: str, new_tag: str, print_eval: bool 
         if print_eval:
             print('The changelog has not been updated since the last release.')
         strategy = 'update'
-    elif latest_clog_tag in ('latest', new_tag):
+    elif latest_clog_tag in (latest_placeholder, new_tag):
         if print_eval:
             print(
                 'The changelog was already updated since the last release, do you want to apply this tag, or refresh it?'
@@ -281,13 +333,16 @@ def eval_clog_update_strategy(clog_content: str, new_tag: str, print_eval: bool 
 
 def execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, save, **kwargs):
     new_section = prepare_new_section(new_tag, config, add_date=True)
+    latest_placeholder = get_config_latest_tag(config)
 
     if strategy == 'prompt':
-        print('It looks like the changelog was already updated since the last release (`latest` is present).')
+        print(
+            f'It looks like the changelog was already updated since the last release (`{latest_placeholder}` is present).'
+        )
 
         msg.imsg('run: `uv-ship log --latest` to compare with latest commits\n', icon=msg.sym.item, color=msg.ac.BLUE)
 
-        if new_tag == 'latest':
+        if new_tag == latest_placeholder:
             confirm = input('do you want to refresh the changelog? [y|N]:').strip().lower()
 
             if confirm in ('y', 'yes'):
@@ -303,13 +358,15 @@ def execute_update_strategy(config, clog_path, clog_content, new_tag, strategy, 
     if strategy == 'update':
         clog_updated = strategy_update(clog_content, new_section)
     elif strategy == 'replace':
-        clog_updated = strategy_replace(clog_content, new_section, 'latest')
+        clog_updated = strategy_replace(clog_content, new_section, latest_placeholder)
     elif strategy == 'apply':
         clog_updated = strategy_apply(clog_content, new_tag)
     else:
         msg.failure(f'unknown changelog update strategy: {strategy}')
 
-    show_changelog(content=clog_updated, clog_file=config['changelog_path'], **kwargs)
+    show_changelog(
+        content=clog_updated, clog_file=config['changelog_path'], latest_placeholder=latest_placeholder, **kwargs
+    )
     print('')
 
     if save:

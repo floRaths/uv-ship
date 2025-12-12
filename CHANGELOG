@@ -1,5 +1,18 @@
 # Changelog
 
+## `v0.7.0` — [2025-10-21]
+
+- pkg: added pytest [[444b564](https://github.com/floRaths/uv-ship/commit/444b564)]
+- fix: credentials exposure in Git remotes [[2e69ee9](https://github.com/floRaths/uv-ship/commit/2e69ee9)]
+- feat: support for "[Unreleased]" sections in the changelog [[9c321e2](https://github.com/floRaths/uv-ship/commit/9c321e2)]
+- pkg: py > 3.10 systems won't install tomli as dep [[7027535](https://github.com/floRaths/uv-ship/commit/7027535)]
+
+## `v0.6.1` — [2025-10-20]
+
+> co-authored by: [wvanhed](https://github.com/wvanhed)
+
+- fix: resolve UnicodeDecodeError on Windows [[7c4700e](https://github.com/floRaths/uv-ship/commit/7c4700e)]
+
 ## `v0.6.0` — [2025-10-08]
 
 > co-authored by: [gokhanmeteerturk](https://github.com/gokhanmeteerturk)

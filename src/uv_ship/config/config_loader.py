@@ -1,8 +1,12 @@
 import importlib.resources as resources
 import os
+import sys
 from pathlib import Path
 
-import tomli as tomllib
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 from .. import messages as msg
 from ..resources import sym
