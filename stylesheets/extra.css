@@ -1,0 +1,247 @@
+/* COLOR SCHEMES */
+
+/* Base: everything that’s common goes here */
+[data-md-color-scheme] {
+
+  /* DEFINE VARIABLES - Only these are meant to be changed in the themes */
+  --site-hue: 250;
+
+  --surface-val: 10%;
+  --surface-sat: 15%;
+
+  --header-val:  22%;
+  --header-sat:  30%;
+
+  --code-val:    20%;
+  --code-sat:    10%;
+
+  --acc_1-hue:    166;
+  --acc_1-sat:    100%;
+  --acc_1-val:    69%;
+
+  --acc_2-hue:    165;
+  --acc_2-sat:    93%;
+  --acc_2-val:    34%;
+
+  --neutral-val: 10%;
+
+  --text-body-val:    10%;
+  --text-caption-val: 10%;
+  --text-header-val:  70%;
+
+
+
+  /* BUILD COLORS from those variables */
+  --text-body:     hsla(0, 0%, var(--text-body-val), 1);
+  --text-caption:  hsla(0, 0%, var(--text-caption-val), 1);
+  --text-header:   hsla(0, 0%, var(--text-header-val), 1);
+
+  /* surfaces & code backdrops */
+  --surface:       hsla(var(--site-hue), var(--surface-sat), var(--surface-val), 1);
+  --header:        hsla(var(--site-hue), var(--header-sat), var(--header-val), 1);
+  --code_bg:       hsla(var(--site-hue), var(--code-sat), var(--code-val), 1);
+
+  --neutral-grey:  hsla(0, 0%, var(--neutral-val), 1);
+
+  --acc_1:        hsla(var(--acc_1-hue), var(--acc_1-sat), var(--acc_1-val), 1);
+  --acc_2:        hsla(var(--acc_2-hue), var(--acc_2-sat), var(--acc_2-val), 1);
+
+  --trnsp-item:   hsla(0, 0%, var(--text-caption-val), 0.3);
+
+  /* ASSIGN COLORS from those variables */
+  --md-default-fg-color: var(--text-body);
+  --md-primary-bg-color: var(--text-header);                                /* header text and logos */
+
+  /* backdrops */
+  --md-default-bg-color: var(--surface);
+  --md-primary-fg-color: var(--header);
+  --md-code-bg-color:    var(--code_bg);
+
+  /* footer */
+  --md-footer-bg-color: var(--surface);
+  --md-footer-fg-color: var(--text-caption);
+  --md-footer-fg-color--light: var(--text-caption);
+
+  /* various items */
+  --md-accent-fg-color: var(--acc_1);                                  /* selectables (like tabs) */
+  --md-accent-bg-color: var(--acc_1);                                  /* hover items */
+  --md-typeset-a-color: var(--acc_2);                                   /* links and selected nav items */
+
+  --md-accent-fg-color--transparent: hsla(var(--site-hue), 30%, 22%, 0.5);  /* hover item like clickable nav arrow */
+  --md-default-fg-color--lighter: hsla(var(--site-hue), 10%, 45%, 0.5);     /* scrollbars */
+
+  /* borders / separators / copy buttons */
+  --md-default-fg-color--lightest: var(--trnsp-item);
+}
+
+[data-md-color-scheme="slate"] {
+  --surface-val:      10%;
+  --code-val:         20%;
+  --text-body-val:    68%;
+  --text-caption-val: 60%;
+  --neutral-val:      15%;
+}
+
+[data-md-color-scheme="default"] {
+  --surface-val:      82%;
+  --code-val:         90%;
+  --text-body-val:    10%;
+  --text-caption-val: 20%;
+  --neutral-val:      60%;
+}
+
+.acc-1-text {
+  color: var(--acc_1);
+}
+
+.acc-2-text {
+  color: var(--acc_2);
+}
+
+.acc-2-code code {
+  color: var(--acc_2);
+}
+
+/* ——— COLOR SETTINGS BEYOND STANDARD VARIABLES ——— */
+
+.md-search-result__meta {
+  background: var(--neutral-grey) !important;
+}
+
+/* removing color of un-hovered links */
+/* AND setting color of hovered links */
+.toclink {
+  color: unset !important;
+}
+.toclink:hover {
+  color: var(--acc_1) !important;
+}
+
+
+/* set color of the nav background in slim windows */
+div.md-nav__source {
+    background-color: var(--surface) !important;
+}
+
+/* sets the color of the small screen hamburger menu */
+label.md-nav__title {
+    background-color: var(--header) !important;
+    color: var(--text-header) !important;
+}
+
+
+/* ——— TEXT ELEMENT SIZING ——— */
+
+/* Base body text */
+.md-typeset {
+  font-size: 0.875rem !important;
+}
+
+/* Headings */
+.md-typeset h1 {
+  font-size: 2.5rem !important;
+  font-weight: 100 !important;
+  color: var(--text-caption) !important;
+}
+.md-typeset h2 {
+  font-size: 1.8rem !important;
+  font-weight: 100 !important;
+  color: var(--text-caption) !important;
+}
+.md-typeset h3 {
+  font-size: 1.4rem !important;
+  font-weight: 100 !important;
+  color: var(--text-caption) !important;
+}
+.md-typeset h4 {
+  font-size: 1.2rem !important;
+  font-weight: 300 !important;
+  color: var(--text-caption) !important;
+}
+.md-typeset h5 {
+  font-weight: 500 !important;
+  color: var(--text-caption) !important;
+}
+
+
+/* ——— HEADER ADJUSTMENTS ——— */
+.md-header__topic,
+.site-name {
+  /* Built-in mkdocs theme  */
+  font-weight: 200 !important;
+  font-size: 1.35rem !important;
+}
+/* Logo area size */
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.75rem;
+  width: auto;
+  opacity: 0.75;
+}
+
+
+/* ——— ADMONITION ADJUSTMENTS ——— */
+
+/* title line ("Note", "Warning", etc.) */
+.md-typeset .admonition>.admonition-title,
+.md-typeset details.admonition>summary {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+}
+
+/* Whole admonition block */
+.md-typeset .admonition,
+.md-typeset details.admonition {
+  font-size: 0.8rem !important;
+}
+
+
+
+
+/* MISC */
+
+/* Always take the full screen for content, require scrolling to see the footer
+This stops the size of the nav from jumping around when you visit a page without
+a lot of content (i.e., an overview page). We don't apply this to small screens
+because the nav is in a hamburger menu anyway
+*/
+@media screen and (min-width: 76.25em) {
+  .md-main {
+    min-height: 100vh;
+  }
+}
+
+/* make tables take the full width */
+/* See: https://github.com/squidfunk/mkdocs-material/issues/175#issuecomment-616694465 */
+.md-typeset__table {
+  min-width: 100%;
+}
+.md-typeset table:not([class]) {
+  display: table;
+}
+
+/* some python code selection bug? Not sure it applies to us */
+/* See: https://mkdocstrings.github.io/recipes/#prevent-selection-of-prompts-and-output-in-python-code-blocks */
+.highlight .gp,
+.highlight .go {
+  /* Generic.Prompt, Generic.Output */
+  user-select: none;
+}
+
+
+/* Omit the first breadcrumb item, which is the "Introduction"
+.md-path__list>.md-path__item:first-of-type {
+  display: none;
+}
+.md-path__list>.md-path__item:nth-of-type(2):before {
+  display: none;
+}
+*/
+
+
+/* Hide the modified date — its positioning is awkward but will require theme
+modifications
+.md-source-file__fact {
+  visibility: hidden;
+}
+*/

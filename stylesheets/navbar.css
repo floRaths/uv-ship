@@ -1,0 +1,96 @@
+/* ——— NAVBAR TWEAKS ——— */
+
+/* Tweak the formatting of the primary nav on a large screen */
+@media screen and (min-width: 76.25em) {
+
+  /* TEXT SIZING */
+
+  /* Bold the active nav link for accessibility */
+  .md-nav__link--active {
+    font-weight: bold;
+  }
+
+  /* nav section header text sizing */
+  .md-nav__item--section>.md-nav__link,
+  .md-nav__item--section>label {
+    /* label = collapsed sections */
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    /* optional for clarity        */
+  }
+
+  /* sub items text sizing */
+  .md-nav--primary .md-nav {
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+
+  /* Decrease the font size of items in a collapsible section */
+  .md-nav__item--section>.md-nav>.md-nav__list>.md-nav__item>.md-nav>.md-nav__list {
+    font-size: 0.725rem;
+  }
+
+  /* Increase the size of the first nav item to match the sections
+  It has no children, so it is not considered a section */
+  .md-nav--primary>.md-nav__list>.md-nav__item:first-of-type {
+    font-size: 0.85rem;
+    margin-bottom: 0.75em;
+  }
+
+
+  /* PADDING AND MARGINS */
+
+  /* move every link that *isn’t* the section title 1 rem to the right */
+  .md-nav__item--section .md-nav__item>.md-nav__link {
+    padding-left: 0.5rem;
+    /* tweak to taste */
+  }
+
+  /* Reducing spacing between nav items to fit more content
+  First, disable `nav__link` spacing then use `nav__item` to enforce margins this reduces inconsistencies in the spacing. */
+  .md-nav--primary .md-nav__link {
+    margin: 0.1em;
+  }
+
+  .md-nav--primary .md-nav__item {
+    margin-top: 0.35em;
+  }
+
+  /* Use larger spacing for the sections headings */
+  .md-nav--primary .md-nav__item--section {
+    margin-bottom: 1.75em;
+    margin-top: 1.75em;
+  }
+
+  /* Increase top margin on the first item of a collapsible section */
+  .md-nav__item--section>.md-nav>.md-nav__list>.md-nav__item>.md-nav>.md-nav__list>.md-nav__item:first-of-type {
+    margin-top: 0.5em;
+  }
+
+  /* Increase bottom margin on the last item of a collapsible section */
+  .md-nav__item--section>.md-nav>.md-nav__list>.md-nav__item>.md-nav>.md-nav__list>.md-nav__item:last-of-type {
+    margin-bottom: 0.75em;
+  }
+
+
+  /* MISC */
+
+  /* Omits the nav main title entirely unless on a small screen, in which case
+  the nav title is needed for backwards navigation in the collapsible
+  nav variant.
+
+  See https://github.com/astral-sh/uv/issues/5130 */
+  .md-nav__title {
+    display: none;
+  }
+
+  /* Prevent the shadow from the nav title from blurring the top link.
+  The box shadow isn't really doing anything anyway.
+
+  This is a consequence of the reduced nav spacing. */
+  .md-nav--primary .md-nav__title {
+    box-shadow: none;
+  }
+}
