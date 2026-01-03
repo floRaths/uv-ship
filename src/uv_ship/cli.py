@@ -1,3 +1,5 @@
+import datetime
+
 from . import commands as cmd
 from . import config as cfg
 from . import messages as msg
@@ -6,7 +8,7 @@ from .resources import rich_click as click
 
 click.rich_click.COMMAND_GROUPS = {
     'uv-ship': [
-        {'name': 'commands', 'commands': ['next', 'version', 'log', 'status']},
+        {'name': 'commands', 'commands': ['next', 'calver', 'version', 'log', 'status']},
         # {"name": "utilities", "commands": ["log"]},
     ],
 }
@@ -73,6 +75,27 @@ def cli_next(ctx, release_type, pre_release, dirty):
     next_step = release_type if not pre_release else f'{release_type} ({pre_release})'
     msg.imsg(f'bumping to the next {next_step} version:', color=msg.ac.BLUE)
     version = cmd.gen.calculate_version(bump_type=release_type, pre_release=pre_release)
+    wfl.ship(config=ctx.obj, version=version, allow_dirty=dirty)
+
+
+# region calver
+@cli.command(name='calver')
+@click.option('--pre-release', type=str, default=None, help='Pre-release component (e.g. alpha, beta).')
+@click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
+@click.pass_context
+def cli_calver(ctx, pre_release, dirty):
+    """
+    bump and ship the next project version using calendar versions (calver).
+
+    \b
+    pair with pre-release:        alpha, beta, rc, post, dev (optional)
+    \b
+    remove pre-release status:    set release_type to 'stable'
+    """
+    # show summary
+    current_date = datetime.date.today()
+    version = current_date.strftime('%Y.%m.%d')
+    msg.imsg(f'bumping to the next version {version}:', color=msg.ac.BLUE)
     wfl.ship(config=ctx.obj, version=version, allow_dirty=dirty)
 
 
