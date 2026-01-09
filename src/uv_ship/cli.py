@@ -80,17 +80,12 @@ def cli_next(ctx, release_type, pre_release, dirty):
 
 # region calver
 @cli.command(name='calver')
-@click.option('--pre-release', type=str, default=None, help='Pre-release component (e.g. alpha, beta).')
 @click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
 @click.pass_context
 def cli_calver(ctx, pre_release, dirty):
     """
-    bump and ship the next project version using calendar versions (calver).
+    bump and ship the project with todya's date as version number (calver).
 
-    \b
-    pair with pre-release:        alpha, beta, rc, post, dev (optional)
-    \b
-    remove pre-release status:    set release_type to 'stable'
     """
     # show summary
     current_date = datetime.date.today()
