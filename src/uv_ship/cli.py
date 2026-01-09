@@ -1,3 +1,5 @@
+import datetime
+
 from . import commands as cmd
 from . import config as cfg
 from . import messages as msg
@@ -6,7 +8,7 @@ from .resources import rich_click as click
 
 click.rich_click.COMMAND_GROUPS = {
     'uv-ship': [
-        {'name': 'commands', 'commands': ['next', 'version', 'log', 'status']},
+        {'name': 'commands', 'commands': ['next', 'calver', 'version', 'log', 'status']},
         # {"name": "utilities", "commands": ["log"]},
     ],
 }
@@ -73,6 +75,22 @@ def cli_next(ctx, release_type, pre_release, dirty):
     next_step = release_type if not pre_release else f'{release_type} ({pre_release})'
     msg.imsg(f'bumping to the next {next_step} version:', color=msg.ac.BLUE)
     version = cmd.gen.calculate_version(bump_type=release_type, pre_release=pre_release)
+    wfl.ship(config=ctx.obj, version=version, allow_dirty=dirty)
+
+
+# region calver
+@cli.command(name='calver')
+@click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
+@click.pass_context
+def cli_calver(ctx, dirty):
+    """
+    bump and ship the project with todya's date as version number (calver).
+
+    """
+    # show summary
+    current_date = datetime.date.today()
+    version = current_date.strftime('%Y.%m.%d')
+    msg.imsg(f'bumping to the next version {version}:', color=msg.ac.BLUE)
     wfl.ship(config=ctx.obj, version=version, allow_dirty=dirty)
 
 
