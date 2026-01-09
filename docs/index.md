@@ -42,6 +42,7 @@ Need to inspect the changelog first? Run `uv-ship log --latest` to preview commi
 ## CLI overview
 - `uv-ship next <bump-type>` – bump `pyproject.toml` & `uv.lock`, update the changelog (optional), commit, tag, push.
 - `uv-ship version <version>` – set a specific version without calculating the bump.
+- `uv-ship calver` - set version to current date when using CalVer (Calendar Versioning)
 - `uv-ship log [--latest] [--save]` – show/update the changelog section built from commits after the latest tag.
 
 Pass `--dry-run` on the root command to rehearse any of the subcommands without touching disk:

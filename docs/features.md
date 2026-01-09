@@ -55,6 +55,17 @@ Prepares and ships the provided version. This path allows you to break out of se
 
 ---
 
+### `uv-ship calver`
+Determines current date and creates a version number in the format `YYYY.m.d` (e.g. 2026.1.13) runs the preflight checks, offers to refresh the changelog, updates version metadata, and executes the commit/tag/push sequence unless running as a dry run.
+
+<span class="acc-2-text">**usage:**</span> `uv-ship calver [options]`
+
+> ##### options:
+> `--dirty` Allow dirty working directory.  
+> `--help` Show this message and exit.  
+
+---
+
 ### `uv-ship log`
 Builds a changelog section from commits since the latest Git tag. Use `--latest` to preview without writing, or `--save` to persist the top section of your configured changelog file.
 
