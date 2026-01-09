@@ -82,7 +82,7 @@ def cli_next(ctx, release_type, pre_release, dirty):
 @cli.command(name='calver')
 @click.option('--dirty', is_flag=True, default=None, help='Allow dirty working directory.')
 @click.pass_context
-def cli_calver(ctx, pre_release, dirty):
+def cli_calver(ctx, dirty):
     """
     bump and ship the project with todya's date as version number (calver).
 
